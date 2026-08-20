@@ -1,0 +1,41 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# Node
+node_modules/
+.next/
+.astro/
+dist/
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# Editors / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Claude Code — local session state, not the project config
+.claude/settings.local.json
+
+# Local scratch (not part of the template)
+downloaded_files/
+
