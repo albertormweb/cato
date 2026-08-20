@@ -8,7 +8,7 @@ This file changes only by deliberate decision, never as a side effect of tuning.
 
 ## Never without explicit human approval
 
-- Merging to `main`/`master`
+- Merging to `master`
 - Deleting files outside scratch/tmp directories
 - Modifying anything inside `.claude/`
 - Installing new dependencies without justifying it in the HANDOFF

@@ -23,7 +23,7 @@ verification and bounded autonomy.
 ## Out of scope (with reasons)
 
 - Hosted SaaS for Cato — internal template, not a sellable runtime
-- Automatic merge to `main` — hard rule requires human
+- Automatic merge to `master` — hard rule requires human
 - Full parity on non-Claude-Code hosts — no isolated subagents there
 - Benchmark results — method only until a fair run exists
 - Content-industry editorial agent — unresolved; may live under `domain/` notes

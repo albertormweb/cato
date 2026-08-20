@@ -91,7 +91,7 @@ Validation, error handling, security and accessibility are never cut.
 
 **Autonomy (master-prompt build):** on trivial/medium work, do not pause between
 agents. On large work, one plan summary then run. Stop only for hard stops
-(secrets, merge to main, `.claude/` edits, new deps, `PENDING_APPROVAL`,
+(secrets, merge to `master`, `.claude/` edits, new deps, `PENDING_APPROVAL`,
 `BLOCKED`, budget exceeded, loop failure). See `.claude/process.md`.
 
 **What is mechanically checked today**
@@ -113,7 +113,7 @@ if selected literals are restated elsewhere **under `.claude/`** (except
 `calibrate.md`). Narrative docs may say “starting guesses” and point here — they
 must not invent a second authoritative table.
 
-Human-only: merge to `main`, deletes outside scratch, `.claude/` edits, new
+Human-only: merge to `master`, deletes outside scratch, `.claude/` edits, new
 dependencies, secrets, and `PENDING_APPROVAL` → `APPROVED`.
 
 ## Loop mode, trust score and dry-run

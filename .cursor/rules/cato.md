@@ -30,8 +30,8 @@ Don't read outside this list unless the task requires it.
 When the human gives one product description: cut MVP vs later work first, write
 design and a concrete `PLANNING.md → Now`, then build that backlog. Prefer
 continuing without asking permission every step. Stop for secrets, merges to
-main, dependency installs, `.claude/` edits, `PENDING_APPROVAL`, true ambiguity
-(`BLOCKED`), or the same failure twice.
+`master`, dependency installs, `.claude/` edits, `PENDING_APPROVAL`, true
+ambiguity (`BLOCKED`), or the same failure twice.
 
 ## Work in phases, not all at once
 
@@ -82,7 +82,7 @@ validation or error handling — those aren't shortcuts, they're omissions.
 
 ## Never without explicit human approval
 
-- Merging to `main`/`master`
+- Merging to `master`
 - Deleting files outside scratch/tmp
 - Modifying anything in `.claude/` or this file
 - Installing new dependencies without justifying it

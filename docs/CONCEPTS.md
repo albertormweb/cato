@@ -81,8 +81,9 @@ agents must honour, not a filesystem lock.
 ## Autonomy / hard stops
 
 Trivial and medium work continues between agents without asking. Large work gets
-one plan pause. Always stop for hard rules (secrets, main merge, `.claude/`, new
-deps), `PENDING_APPROVAL`, `BLOCKED`, budget exceeded, or repeated loop failure.
+one plan pause. Always stop for hard rules (secrets, merge to `master`,
+`.claude/`, new deps), `PENDING_APPROVAL`, `BLOCKED`, budget exceeded, or
+repeated loop failure.
 See `.claude/process.md`.
 
 ## Loop mode

@@ -47,7 +47,7 @@
 ## Out of scope (for now)
 
 - Selling Cato as a hosted product
-- Guaranteeing unattended merge-to-main without a human
+- Guaranteeing unattended merge-to-`master` without a human
 - Non-Claude-Code hosts getting full subagent isolation
 - Published benchmark numbers (method only, in `benchmarks/`)
 - A dedicated content-production agent (see `TECH-DEBT.md`)
