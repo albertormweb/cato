@@ -23,7 +23,8 @@ product end to end. That run is still open in `TECH-DEBT.md`.
 | Trivial budget (2) vs strategist-always-first | **Fixed in process** — new features never trivial |
 | Empty `domain/` / `skills/` looked like dead weight | **Clarified** — README stubs; fill per project |
 | Master-prompt → build path underspecified | **Documented** in `process.md`, `/init-project`, README, FIRST-PROJECT |
-| README claimed all limits are “mechanical” / global SSOT via CI | **Doc debt** — corrected in README this pass (see scores) |
+| README claimed all limits are “mechanical” / global SSOT via CI | **Fixed in README** (2026-08-20); **`rules-hard.md` heading closed 2026-08-21** — now “durable state, not chat” / instruction-level, matching README |
+| Clone URL still placeholder `cato-ai-framework` | **Fixed** (2026-08-21) → `https://github.com/albertormweb/cato.git` |
 
 ## Scores (critical, out of 10)
 

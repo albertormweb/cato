@@ -33,9 +33,11 @@ artifact from `PENDING_APPROVAL` to `APPROVED`. Only the human does that.
 This is the constraint the rest of the system rests on. If it erodes, everything
 else is theatre.
 
-## Approval gates are mechanical
+## Approval gates are durable state, not chat
 
-A verbal "sounds good" in chat isn't the record. State lives in `PLANNING.md`:
+A verbal "sounds good" in chat isn't the record. State lives in `PLANNING.md`.
+The orchestrator must honour that state — this is instruction-level discipline,
+not a filesystem lock or a CI check:
 
 - Artifacts needing human approval (DESIGN.md after a structural change,
   `designer` mockups, DEPLOYMENT.md) are marked `STATUS: PENDING_APPROVAL`.

@@ -15,3 +15,8 @@
 - What got done: Re-validation (19 tests + sync green); docs pass — README honesty on mechanical vs polite controls; DESIGN/PLANNING/specs/ADR for the template; `docs/VALIDATION.md` (overall 6/10); AGENTS master-prompt section; synced portable copies.
 - What's still open/blocked: Real product E2E still unrun.
 - Suggested next step: `/init-project "<master prompt>"` → approve → build loop; then `/calibrate`.
+
+## 2026-08-21
+- What got done: Reworded `rules-hard.md` approval gates (durable state / instruction-level, not “mechanical”); clone URLs → `albertormweb/cato`; TECH-DEBT / PLANNING / VALIDATION bookkeeping.
+- What's still open/blocked: Product E2E still unrun; budgets/approvals remain instruction-level by design.
+- Suggested next step: first real master-prompt product run, then `/calibrate`.

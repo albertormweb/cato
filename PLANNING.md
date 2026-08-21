@@ -5,14 +5,13 @@
 
 ## Now
 
-- Keep template docs and integrity tests aligned with master-prompt build.
-- Next human action for proving the system: run a real product through
-  `/init-project` → approve genesis → build loop (see `docs/VALIDATION.md`).
+- Human: run a real product through `/init-project` → approve genesis → build
+  loop (see `docs/VALIDATION.md`). That is what closes “never E2E” in
+  `TECH-DEBT.md`.
 
 ## Next
 
-- First end-to-end product run; file results under `benchmarks/results/` or
-  session notes + `/calibrate`.
+- After that run: session notes + `/calibrate` with a non-empty `agent-log.md`.
 - Structured trust-score annotations (`reversed` / `avoidable` as fields).
 - Optionally parse `config.md` from `trust_score.py` instead of hardcoded floors.
 

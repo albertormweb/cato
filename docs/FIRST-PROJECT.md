@@ -10,7 +10,7 @@ Claude Code installed. The template is markdown — no app build. Optional Pytho
 ## 1. Clone and initialise
 
 ```bash
-git clone https://github.com/<your-user>/cato-ai-framework my-project
+git clone https://github.com/albertormweb/cato.git my-project
 cd my-project
 ./setup.sh
 ```

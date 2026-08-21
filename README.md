@@ -33,7 +33,7 @@ In concrete pieces:
 ## Quickstart
 
 ```bash
-git clone https://github.com/<your-user>/cato-ai-framework my-project && cd my-project
+git clone https://github.com/albertormweb/cato.git my-project && cd my-project
 ./setup.sh
 ```
 
