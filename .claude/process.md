@@ -47,10 +47,20 @@ Intended path for greenfield (and the default mental model for this framework):
    orchestrator drains `Now` / the agreed backlog using medium/trivial rules
    above, looping `implementer → qa` with rising thresholds when asked to loop.
 5. Stop only on a hard stop. When `Now` is empty, summarise and close the
-   session (session log + trust score script).
+   session (session log, decision ledger, trust score script — see below).
 
 Do not invent scope beyond the approved MVP cut. Park new ideas as V2/FUTURE
 via `strategist` instead of silently expanding the build.
+
+## Decision ledger
+
+`memory/decisions.md` records choices made during a session where the spec did
+not decide — ranked least-confident first so the human starts with the shaky
+ones. Read from the top; stop when the rest looks fine.
+
+It reports only. It does not block closing a session and does not start fixes.
+ADRs in `memory/adr/` are out of scope here (those were deliberate). The
+orchestrator writes the ledger at session close; see `claude-orchestrator.md`.
 
 ## Loop mode
 

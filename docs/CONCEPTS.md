@@ -101,6 +101,13 @@ One descriptive `/init-project` prompt → genesis at `PENDING_APPROVAL` → hum
 approves → `Build PLANNING.md Now; work in a loop`. That is the default product
 path for this template.
 
+## Decision ledger
+
+`memory/decisions.md` lists undeliberated choices from a session — places the
+spec was silent and someone picked anyway — ranked least-confident first. It
+reports; it does not block or auto-fix. Deliberate decisions belong in
+`memory/adr/`, not here.
+
 ## Trust score
 
 Table in `memory/trust-score.md`, generated from `agent-log.md` by
@@ -124,6 +131,7 @@ Code tool allowlists. **Instruction-level today:** budgets, honouring
 | What's happening now | `PLANNING.md` |
 | How it's built | `DESIGN.md` |
 | Why it's built that way | `memory/adr/` |
+| Undeliberated session choices | `memory/decisions.md` |
 | What a feature should do | `specs/` |
 | Latest template validation | `docs/VALIDATION.md` |
 | What each agent may do | `.claude/agents/` |

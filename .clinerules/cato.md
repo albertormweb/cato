@@ -20,6 +20,7 @@ framework accepts, and CI checks it doesn't spread further.
 - Infrastructure and deployment → `DEPLOYMENT.md`
 - Requirements per feature → `specs/`
 - Closed decisions → `memory/adr/`
+- Undeliberated session choices → `memory/decisions.md`
 - Session history → `memory/session-log.md`
 - Known technical debt → `TECH-DEBT.md`
 
@@ -97,6 +98,9 @@ validation or error handling — those aren't shortcuts, they're omissions.
   the human approves them. You don't self-approve.
 - When you stop because information is missing, say so plainly and park the task.
   Stopping is correct; inventing the missing information is not.
+- When closing a stretch of work, append undeliberated choices (spec was silent)
+  to `memory/decisions.md`, least-confident first. The ledger reports only — it
+  does not block or auto-fix. Skip anything already in `memory/adr/`.
 
 ## Don't grind
 

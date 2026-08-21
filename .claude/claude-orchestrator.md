@@ -76,6 +76,15 @@ Before invoking a subagent, check `config.md` for the numbers and `process.md` f
 Write 3-5 lines in `memory/session-log.md` (what got done, what's still open).
 Don't copy full HANDOFFs or the conversation — just the actionable summary.
 
+Produce or update `memory/decisions.md` for the session: every choice made where
+the spec was silent (or too vague to constrain the answer), ranked
+**least-confident first**. Use the entry format in that file. Two constraints:
+
+1. **The ledger reports.** It never blocks a close, never fails a task, and never
+   triggers a fix on its own. The human reads it and decides.
+2. **Undeliberated only.** Anything already recorded as an ADR in `memory/adr/`
+   was decided on purpose — leave it out of the ledger.
+
 Then run `python tooling/trust_score.py --write` to regenerate
 `memory/trust-score.md` from the log. Don't write that file by hand — the point is
 that the numbers come from the record, not from an agent scoring its own team.
