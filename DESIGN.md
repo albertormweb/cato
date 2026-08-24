@@ -4,14 +4,21 @@
 > agent for structural changes, with an ADR when non-trivial. Product apps
 > generated from this template replace this file via `/init-project`.
 
+CATO is positioned as an **AI Software Engineering Control Plane** (Harness
+Engineering applied to coding agents). This file describes the **template
+architecture as implemented**, not proven product outcomes. Thesis and honesty
+labels: `docs/POSITIONING.md`, `README.md`.
+
 ## Stack
 
-- **Product surface:** Markdown instructions consumed by Claude Code (and a
-  portable subset via `AGENTS.md`).
+- **Product surface:** Markdown instructions consumed primarily by Claude Code
+  (orchestrator + subagents), plus a portable subset via `AGENTS.md` for other
+  hosts. Claude Code is the current execution environment, not the conceptual
+  definition of Cato.
 - **Optional enforcement:** Python 3 + pytest under `tooling/` (trust score,
-  ruleset sync, structure tests). CI runs those checks.
+  ruleset sync, structure tests, evals instrumentation). CI runs those checks.
 - **Not in scope as a runtime:** no application server, no package to install for
-  end users of generated products.
+  end users of generated products; not an observability SaaS.
 
 ## Main modules
 
@@ -25,7 +32,7 @@
 | `.claude/commands/` | `/init-project`, `/harvest-debt`, `/calibrate` |
 | `memory/` | ADRs, session log, agent audit log, generated trust score |
 | `tooling/` | Scripts + tests that enforce what prose cannot |
-| `docs/` | Concepts, first-project walkthrough, validation report |
+| `docs/` | Positioning, concepts, first-project, evals, validation |
 | `domain/`, `.claude/skills/` | Per-project fill (stubs only in the template) |
 
 ## Key architectural decisions

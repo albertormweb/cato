@@ -2,6 +2,8 @@
 
 Scripts that maintain the **framework template**. Optional for building a product
 with Cato; used by CI and anyone who cares that instructions stay consistent.
+Product positioning (Harness Engineering / control plane) lives in
+`docs/POSITIONING.md` and `README.md` — this folder does not assert outcome claims.
 
 They exist because some jobs should not rely on an LLM being honest with itself:
 deriving the trust score from the audit log, keeping portable rule copies in

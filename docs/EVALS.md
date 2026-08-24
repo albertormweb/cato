@@ -1,8 +1,12 @@
 # Evals v0.1 and Feedback Loop v0
 
-Evidence that Cato can (or cannot) take delegated development work with less
-human supervision — and a small loop that proposes process changes without
-applying them.
+Experimental measurement for CATO’s control-plane hypothesis: whether structured
+Harness Engineering can increase **delegation** to coding agents while reducing
+**human supervision** without raising defects, regressions, or **false trust**.
+
+This is **not** an observability SaaS, not “Datadog for agents,” and not proof
+that Cato already improves outcomes. It records evidence so a pilot can test the
+hypothesis. Conceptual framing: `docs/POSITIONING.md`.
 
 **v0.1 is a measurement instrument**, not a Cato capability upgrade. It fixes
 three experimental blockers: human-owned supervision data, post-audit / false

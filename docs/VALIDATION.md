@@ -2,6 +2,11 @@
 
 > Re-run of the engineering audit after the master-prompt / tool-alignment work.
 > Date: 2026-08-20. Scope: this template repository, not a generated product.
+>
+> **Positioning note (docs only, later):** Cato is framed as an AI Software
+> Engineering Control Plane (`docs/POSITIONING.md`). This report still measures
+> **template integrity**, not safe-delegation outcomes. Experimental baseline:
+> `CATO-experimental-v0.1`.
 
 ## Mechanical checks (this run)
 
@@ -58,7 +63,8 @@ set-and-forget automation until that E2E run exists.
 
 ## What “good” means for this repo
 
-Cato is an **instruction framework**, not an application. Success = agents can
-execute the written jobs, humans approve the few hard gates, and a master prompt
-can drive build without the template contradicting itself. Product correctness
-is measured on generated projects, via `benchmarks/` when someone runs them.
+Cato is an **instruction / control-plane template**, not an application. Success
+for this audit = agents can execute the written jobs, humans approve the few hard
+gates, and a master prompt can drive build without the template contradicting
+itself. Product correctness and **safe delegation** are measured on real
+projects / pilots (`docs/EVALS.md`, `benchmarks/`) — not claimed by this report.

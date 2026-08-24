@@ -2,6 +2,10 @@
 
 > Known gaps in the framework itself, plus shortcuts harvested from project code
 > via `/harvest-debt`. Not bugs — missing or deliberately deferred design.
+>
+> Positioning: Cato aims to be an AI Software Engineering Control Plane
+> (`docs/POSITIONING.md`). Utility and safe-delegation claims remain **hypothesis**
+> until a real pilot produces evidence (`CATO-experimental-v0.1`).
 
 Latest integrity re-validation: `docs/VALIDATION.md` (2026-08-20; honesty
 follow-up 2026-08-21). Template tests green; product E2E still open.

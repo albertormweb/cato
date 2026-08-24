@@ -1,7 +1,9 @@
 # Evals storage (v0.1)
 
-Append-only JSONL evidence for whether Cato can be trusted with delegated work,
-and whether process changes are worth proposing.
+Append-only JSONL **experimental** evidence for CATO’s delegation hypothesis
+(Harness Engineering / control plane): human supervision, delegation, safe
+delegation, false trust — and whether process changes are worth *proposing*
+(never auto-applied). Not an observability platform.
 
 | File | Contents |
 |---|---|

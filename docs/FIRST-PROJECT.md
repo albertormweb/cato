@@ -1,6 +1,12 @@
 # Your first project
 
-Walkthrough start to finish. Terms: `CONCEPTS.md`. Template health: `VALIDATION.md`.
+Walkthrough start to finish. Positioning: `POSITIONING.md`. Terms: `CONCEPTS.md`.
+Template health: `VALIDATION.md`. Measurement (experimental): `EVALS.md`.
+
+CATO is an **AI Software Engineering Control Plane** — a harness around coding
+agents. This walkthrough uses **Claude Code** as the primary host today. Template
+integrity is tested; whether Cato improves **safe delegation** is a hypothesis
+under experimental validation, not a demonstrated result.
 
 ## Before you start
 
@@ -101,7 +107,8 @@ guesses until then.
 |---|---|
 | Too many questions | Thin spec — invest in `specs/` |
 | Won't build what I asked | Check out-of-scope; overturn with a reason |
-| Slower than raw Claude Code | Expected on one-file tasks; if slow on hard work too, run `benchmarks/` |
+| Slower than raw Claude Code | Expected on one-file tasks; overhead is the harness — if slow on hard work too, run `benchmarks/` |
+| Green CATO PASS / Trust Report | Internal controls only — not objective correctness; see `EVALS.md` |
 | One agent always wrong | Read `trust-score.md`, then rewrite that agent's `.md` |
 
 ## Optional later

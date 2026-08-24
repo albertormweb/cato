@@ -1,19 +1,38 @@
 # Concepts
 
-Cato uses some vocabulary that's obvious if you've worked in software teams and
-opaque if you haven't. This explains the terms and why each thing exists. You
-don't need it to start — see `FIRST-PROJECT.md` — but it helps when behaviour
-surprises you.
+Vocabulary for day-to-day use of Cato. Positioning thesis (Harness Engineering,
+control plane, Safe Delegation): **`POSITIONING.md`**. First run:
+`FIRST-PROJECT.md`. Measurement: `EVALS.md`. Template health: `VALIDATION.md`.
 
 ## The basic idea
 
-Left alone, an AI agent on a project tends to forget last week's decisions, build
-things nobody asked for, and claim "done" without checking. That's missing
-structure, not a model failure.
+Left alone, a coding agent tends to forget last week’s decisions, build things
+nobody asked for, and claim “done” without checking — including **silent agent
+failures** (technically successful, semantically wrong). That is missing
+engineering structure around the model, not proof that models cannot write code.
 
-Cato adds structure: specialised roles, a written record, and someone whose job is
-to check someone else's work. Intended internal use: **master prompt → approve
-once → build**.
+CATO aims to be that structure: an **AI Software Engineering Control Plane** —
+roles, process, controls, verification, memory, and measurement — so teams can
+**delegate** more work without relying on hope.
+
+Intended internal loop today: **master prompt → approve once → build** (Claude
+Code as primary host).
+
+> The model is the worker. The harness is the engineering system around it.
+
+## Harness Engineering
+
+Discipline of designing the system around an AI model so it can operate with
+greater autonomy inside a controlled, verifiable, and traceable process. CATO
+applies it to software development with coding agents. Details: `POSITIONING.md`.
+
+## Prompt vs control
+
+**Instructions influence behavior. Controls constrain what can happen.**
+
+“Do not change the schema” is an instruction. Withholding write permission or
+requiring human approval is a control. Cato mixes both; many gates remain
+instruction-level — see Enforcement honesty below.
 
 ## Agent
 
@@ -26,8 +45,8 @@ file owners get Write/Edit; `reviewer` gets Bash for `git diff`.
 
 ## Orchestrator
 
-Coordinates; does not implement by default. When you talk to Cato, you talk to the
-orchestrator.
+Coordinates; does not implement by default. When you talk to Cato on Claude Code,
+you talk to the orchestrator.
 
 ## Handoff
 
@@ -56,7 +75,7 @@ don't relitigate settled choices.
 ## Spec
 
 What a feature should do, plus **out of scope** and why. The out-of-scope half
-stops platform sprawl.
+stops platform sprawl. Specs are DEFINE-layer artifacts: what “done” means.
 
 ## MVP / V2 / FUTURE
 
@@ -108,19 +127,33 @@ spec was silent and someone picked anyway — ranked least-confident first. It
 reports; it does not block or auto-fix. Deliberate decisions belong in
 `memory/adr/`, not here.
 
-## Evals / feedback (v0.1)
+## CATO PASS
+
+Internal Cato controls passed. **Not** objective correctness, bug-freedom, or
+safe delegation. Independent post-audit is separate evidence. See `EVALS.md`.
+
+## Delegation / Safe Delegation
+
+- **Delegation** — human accepted without exhaustive manual review  
+- **Safe Delegation** — delegated **and** later independent post-audit found no
+  material defect  
+- **False Trust** — delegated, post-audit found a material defect  
+
+## Evals / feedback (v0.1) — experimental
 
 `memory/evals/` stores per-task evidence, human intervention logs, post-audits,
-and improvement proposals. Tooling prints trust reports and metrics (Delegation,
-Safe Delegation, False Trust). **CATO PASS** = internal controls only — not
-objective correctness. Human supervision minutes are human-owned; post-audit
-time is experimental verification and must not inflate them. Proposals need
-human approval and never auto-edit Cato. See `docs/EVALS.md`.
+and improvement proposals. Tooling prints trust reports and metrics (Human
+Supervision, Delegation, Safe Delegation, False Trust). Human supervision
+minutes are human-owned; post-audit time is experimental verification and must
+not inflate them. Proposals need human approval and never auto-edit Cato. This is
+a **measurement instrument**, not proof that Cato improves outcomes. See
+`docs/EVALS.md`.
 
 ## Trust score
 
 Table in `memory/trust-score.md`, generated from `agent-log.md` by
-`tooling/trust_score.py`. Needs honest `avoidable` / `reversed` labels.
+`tooling/trust_score.py` (per-agent HANDOFF reliability). Separate from task
+Evals. Needs honest `avoidable` / `reversed` labels.
 
 ## Calibration
 
@@ -137,6 +170,7 @@ Code tool allowlists. **Instruction-level today:** budgets, honouring
 
 | You want | Look at |
 |---|---|
+| What Cato is / hypothesis | `docs/POSITIONING.md`, `README.md` |
 | What's happening now | `PLANNING.md` |
 | How it's built | `DESIGN.md` |
 | Why it's built that way | `memory/adr/` |

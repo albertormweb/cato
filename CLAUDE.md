@@ -19,6 +19,7 @@ Don't duplicate here anything that lives in the imported files.
 
 ## Where to look
 
+- What Cato is / experimental hypothesis → `docs/POSITIONING.md`, `README.md`
 - Current state, next task, and anything at `PENDING_APPROVAL` → `PLANNING.md`
 - Architecture and high-level decisions → `DESIGN.md`
 - Wireframes and mockups → `design/`
