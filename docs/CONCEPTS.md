@@ -108,11 +108,14 @@ spec was silent and someone picked anyway — ranked least-confident first. It
 reports; it does not block or auto-fix. Deliberate decisions belong in
 `memory/adr/`, not here.
 
-## Evals / feedback (v0)
+## Evals / feedback (v0.1)
 
-`memory/evals/` stores per-task evidence and improvement proposals. Tooling
-prints trust reports and metrics. Proposals need human approval and never
-auto-edit Cato. See `docs/EVALS.md`. Absence of findings is not proof of safety.
+`memory/evals/` stores per-task evidence, human intervention logs, post-audits,
+and improvement proposals. Tooling prints trust reports and metrics (Delegation,
+Safe Delegation, False Trust). **CATO PASS** = internal controls only — not
+objective correctness. Human supervision minutes are human-owned; post-audit
+time is experimental verification and must not inflate them. Proposals need
+human approval and never auto-edit Cato. See `docs/EVALS.md`.
 
 ## Trust score
 

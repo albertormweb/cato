@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
-"""Evals v0 and Feedback Loop v0 for Cato.
+"""Evals v0.1 and Feedback Loop v0 for Cato.
 
 Records task evidence (JSONL), prints trust reports, derives simple metrics,
 writes feedback analyses, and stores improvement proposals that never auto-apply
 to .claude/ or other framework files.
 
+Measurement additions in v0.1 (instrument only — not product features):
+- Human intervention log → derived human_minutes (never invented by Cato)
+- Post-audit ledger → Safe Delegation / False Trust rates
+- Explicit semantics: CATO PASS = internal controls only
+
 Usage:
     python tooling/evals.py record --json '{"task_id":"T1",...}'
     python tooling/evals.py record --file path.json
+    python tooling/evals.py intervention --json '{...}'
+    python tooling/evals.py post-audit --json '{...}'
     python tooling/evals.py report TASK_ID
     python tooling/evals.py metrics
     python tooling/evals.py feedback TASK_ID
@@ -29,6 +36,8 @@ ROOT = Path(__file__).resolve().parents[1]
 EVALS_DIR = ROOT / "memory" / "evals"
 RUNS_PATH = EVALS_DIR / "runs.jsonl"
 PROPOSALS_PATH = EVALS_DIR / "proposals.jsonl"
+INTERVENTIONS_PATH = EVALS_DIR / "interventions.jsonl"
+POST_AUDITS_PATH = EVALS_DIR / "post-audits.jsonl"
 
 # Roles Cato (or its tools) can claim as detectors — not human / post_merge.
 CATO_DETECTED_BY = frozenset(
@@ -47,8 +56,27 @@ CATO_DETECTED_BY = frozenset(
 )
 
 PROPOSAL_STATUSES = frozenset({"PROPOSED", "APPROVED", "REJECTED"})
+AUDIT_RESULTS = frozenset({"CLEAN", "MATERIAL_DEFECT"})
+
+# Human-owned fields — Cato must not invent values for these.
+HUMAN_OWNED_FIELDS = frozenset(
+    {
+        "human_minutes",
+        "human_interventions",
+        "human_intervention_log",
+        "manual_code_review_required",
+        "accepted_without_manual_review",
+    }
+)
 
 FINDING_KEYS = ("finding", "severity", "detected_by", "stage", "resolved")
+
+PASS_SEMANTICS = (
+    "CATO PASS means internal Cato controls passed only. "
+    "It is not proof of objective correctness, absence of bugs, "
+    "or safe delegation. Experimental safe delegation requires "
+    "independent post-audit evidence."
+)
 
 
 def _utc_now() -> str:
@@ -104,7 +132,93 @@ def normalize_finding(raw: Any) -> dict[str, Any]:
     return out
 
 
-def normalize_run(raw: dict[str, Any]) -> dict[str, Any]:
+def normalize_intervention(raw: Any) -> dict[str, Any]:
+    """One human supervision event. Must come from the human, never invented."""
+    if not isinstance(raw, dict):
+        raise ValueError("each human intervention must be an object")
+    duration = raw.get("duration_minutes")
+    if duration is None:
+        raise ValueError("intervention duration_minutes is required")
+    if not isinstance(duration, (int, float)) or duration < 0:
+        raise ValueError("intervention duration_minutes must be a non-negative number")
+    itype = raw.get("type")
+    if itype is None or str(itype).strip() == "":
+        raise ValueError("intervention type is required")
+    d = float(duration)
+    duration_out: float | int = int(d) if d == int(d) else d
+    return {
+        "timestamp": raw.get("timestamp") or _utc_now(),
+        "type": str(itype).strip(),
+        "duration_minutes": duration_out,
+        "note": raw.get("note"),
+        "task_id": raw.get("task_id"),
+    }
+
+
+def interventions_for_task(
+    task_id: str, *, interventions_path: Path | None = None
+) -> list[dict[str, Any]]:
+    path = interventions_path or INTERVENTIONS_PATH
+    out: list[dict[str, Any]] = []
+    for row in _read_jsonl(path):
+        if row.get("task_id") == task_id:
+            # Drop task_id from embedded log entries (kept on ledger rows).
+            item = {k: v for k, v in row.items() if k != "task_id"}
+            out.append(normalize_intervention(item))
+    return out
+
+
+def derive_human_supervision(
+    raw: dict[str, Any],
+    *,
+    ledger_interventions: list[dict[str, Any]] | None = None,
+) -> tuple[list[dict[str, Any]] | None, int | None, float | int | None]:
+    """Derive human_minutes from intervention log when present.
+
+    - No log and no explicit fields → null (unknown). Never invent 0.
+    - Explicit empty log [] → 0 minutes / 0 interventions (human recorded none).
+    - Log with entries → sum durations; count = len(log).
+    - Explicit human_minutes without a log is kept (human-supplied), not invented.
+    """
+    ledger = ledger_interventions or []
+    raw_log = raw.get("human_intervention_log")
+
+    if raw_log is None and not ledger:
+        return (
+            None,
+            raw.get("human_interventions"),
+            raw.get("human_minutes"),
+        )
+
+    combined: list[dict[str, Any]] = []
+    if isinstance(raw_log, list):
+        combined.extend(normalize_intervention(i) for i in raw_log)
+    elif raw_log is not None:
+        raise ValueError("human_intervention_log must be a list")
+    combined.extend(ledger)
+
+    # Strip task_id from stored log entries on the run.
+    stored = [
+        {
+            "timestamp": i["timestamp"],
+            "type": i["type"],
+            "duration_minutes": i["duration_minutes"],
+            "note": i.get("note"),
+        }
+        for i in combined
+    ]
+    total = sum(i["duration_minutes"] for i in stored)
+    # Prefer int when whole number for stable JSON.
+    if isinstance(total, float) and total == int(total):
+        total = int(total)
+    return stored, len(stored), total
+
+
+def normalize_run(
+    raw: dict[str, Any],
+    *,
+    ledger_interventions: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
     """Accept partial records; unknown fields stay null. Never invent counts."""
     if "task_id" not in raw or not str(raw.get("task_id", "")).strip():
         raise ValueError("task_id is required")
@@ -124,6 +238,12 @@ def normalize_run(raw: dict[str, Any]) -> dict[str, Any]:
         else:
             agents_used = []
 
+    log, human_count, human_minutes = derive_human_supervision(
+        raw, ledger_interventions=ledger_interventions
+    )
+
+    # escaped_defects stays null until post-audit (or explicit human evidence).
+    # Never treat "not detected by Cato" as 0.
     run = {
         "task_id": str(raw["task_id"]).strip(),
         "timestamp": raw.get("timestamp") or _utc_now(),
@@ -140,8 +260,9 @@ def normalize_run(raw: dict[str, Any]) -> dict[str, Any]:
         "retries": raw.get("retries"),
         "architecture_violations": raw.get("architecture_violations"),
         "scope_violations": raw.get("scope_violations"),
-        "human_interventions": raw.get("human_interventions"),
-        "human_minutes": raw.get("human_minutes"),
+        "human_intervention_log": log,
+        "human_interventions": human_count,
+        "human_minutes": human_minutes,
         "manual_code_review_required": raw.get("manual_code_review_required"),
         "accepted_without_manual_review": raw.get("accepted_without_manual_review"),
         "regressions": raw.get("regressions"),
@@ -155,13 +276,31 @@ def normalize_run(raw: dict[str, Any]) -> dict[str, Any]:
     return run
 
 
+def record_intervention(
+    raw: dict[str, Any],
+    *,
+    interventions_path: Path | None = None,
+) -> dict[str, Any]:
+    """Append one human supervision intervention. Does not touch AI duration."""
+    if "task_id" not in raw or not str(raw.get("task_id", "")).strip():
+        raise ValueError("task_id is required")
+    path = interventions_path or INTERVENTIONS_PATH
+    item = normalize_intervention(raw)
+    item["task_id"] = str(raw["task_id"]).strip()
+    _append_jsonl(path, item)
+    return item
+
+
 def record_run(
     raw: dict[str, Any],
     *,
     runs_path: Path | None = None,
+    interventions_path: Path | None = None,
 ) -> dict[str, Any]:
     path = runs_path or RUNS_PATH
-    run = normalize_run(raw)
+    task_id = str(raw.get("task_id", "")).strip()
+    ledger = interventions_for_task(task_id, interventions_path=interventions_path)
+    run = normalize_run(raw, ledger_interventions=ledger)
     existing = _read_jsonl(path)
     if any(r.get("task_id") == run["task_id"] for r in existing):
         raise ValueError(f"task_id already recorded: {run['task_id']}")
@@ -171,6 +310,84 @@ def record_run(
 
 def get_run(task_id: str, *, runs_path: Path | None = None) -> dict[str, Any] | None:
     path = runs_path or RUNS_PATH
+    for row in _read_jsonl(path):
+        if row.get("task_id") == task_id:
+            return row
+    return None
+
+
+def normalize_post_audit(raw: dict[str, Any]) -> dict[str, Any]:
+    if "task_id" not in raw or not str(raw.get("task_id", "")).strip():
+        raise ValueError("task_id is required")
+    result = str(raw.get("audit_result") or "").upper()
+    if result not in AUDIT_RESULTS:
+        raise ValueError(f"audit_result must be one of {sorted(AUDIT_RESULTS)}")
+    defects = raw.get("material_defects") or []
+    if not isinstance(defects, list):
+        raise ValueError("material_defects must be a list")
+    if result == "MATERIAL_DEFECT" and not defects:
+        # Allow empty list but prefer at least a note; still valid if notes explain.
+        pass
+    if result == "CLEAN" and defects:
+        raise ValueError("CLEAN post-audit must not list material_defects")
+    return {
+        "task_id": str(raw["task_id"]).strip(),
+        "timestamp": raw.get("timestamp") or _utc_now(),
+        "audit_result": result,
+        "material_defects": defects,
+        "notes": raw.get("notes"),
+    }
+
+
+def _patch_run_escaped_defects(
+    task_id: str,
+    escaped: int,
+    *,
+    runs_path: Path,
+) -> None:
+    """After post-audit, set escaped_defects from evidence (null → known)."""
+    rows = _read_jsonl(runs_path)
+    found = False
+    for row in rows:
+        if row.get("task_id") == task_id:
+            row["escaped_defects"] = escaped
+            found = True
+            break
+    if found:
+        _rewrite_jsonl(runs_path, rows)
+
+
+def record_post_audit(
+    raw: dict[str, Any],
+    *,
+    post_audits_path: Path | None = None,
+    runs_path: Path | None = None,
+) -> dict[str, Any]:
+    """Record independent experimental verification. Does not add human_minutes."""
+    path = post_audits_path or POST_AUDITS_PATH
+    runs = runs_path or RUNS_PATH
+    audit = normalize_post_audit(raw)
+    existing = _read_jsonl(path)
+    if any(a.get("task_id") == audit["task_id"] for a in existing):
+        raise ValueError(f"post-audit already recorded for task_id: {audit['task_id']}")
+    if get_run(audit["task_id"], runs_path=runs) is None:
+        raise ValueError(
+            f"no eval run for task_id={audit['task_id']}; record the run first"
+        )
+    _append_jsonl(path, audit)
+    # Evidence for escaped_defects — still not human supervision time.
+    if audit["audit_result"] == "CLEAN":
+        escaped = 0
+    else:
+        escaped = len(audit["material_defects"]) if audit["material_defects"] else 1
+    _patch_run_escaped_defects(audit["task_id"], escaped, runs_path=runs)
+    return audit
+
+
+def get_post_audit(
+    task_id: str, *, post_audits_path: Path | None = None
+) -> dict[str, Any] | None:
+    path = post_audits_path or POST_AUDITS_PATH
     for row in _read_jsonl(path):
         if row.get("task_id") == task_id:
             return row
@@ -207,6 +424,19 @@ def _scope_line(run: dict[str, Any]) -> str:
     return "PASS" if v == 0 else f"FAIL ({v})"
 
 
+def _result_block(run: dict[str, Any]) -> str:
+    result = run.get("result") or "unknown"
+    lines = [str(result)]
+    if str(result).upper() == "PASS":
+        lines.append("")
+        lines.append("Internal Cato controls passed.")
+        lines.append("This is not proof of objective correctness.")
+        lines.append(
+            "Experimental safe delegation requires independent post-audit evidence."
+        )
+    return "\n".join(lines)
+
+
 def render_trust_report(run: dict[str, Any]) -> str:
     findings = run.get("findings") or []
     by = Counter(str(f.get("detected_by") or "unknown") for f in findings)
@@ -234,13 +464,36 @@ def render_trust_report(run: dict[str, Any]) -> str:
 
     detected_lines = "\n".join(f"  {k}: {n}" for k, n in sorted(by.items())) or "  none"
 
+    ai_duration = run.get("total_duration_minutes")
+    ai_line = (
+        f"{ai_duration} minutes (AI/task execution; not human supervision)"
+        if ai_duration is not None
+        else "unknown (AI/task execution; not human supervision)"
+    )
+
+    human_min = run.get("human_minutes")
+    human_count = run.get("human_interventions")
+    human_line = (
+        f"{human_min} minutes"
+        if human_min is not None
+        else "unknown"
+    )
+    interventions_line = (
+        f"{human_count} interventions"
+        if human_count is not None
+        else "? interventions"
+    )
+
+    escaped = run.get("escaped_defects")
+    escaped_line = str(escaped) if escaped is not None else "unknown"
+
     return f"""CATO TRUST REPORT
 
 TASK
 {run.get("task_id")} — {run.get("task_type") or "untyped"}
 
 RESULT
-{run.get("result") or "unknown"}
+{_result_block(run)}
 
 REQUIREMENTS
 {_fmt_req(run)} verified
@@ -264,12 +517,19 @@ FINDINGS
 Detected by:
 {detected_lines}
 
-HUMAN INTERVENTION
-{run.get("human_minutes") if run.get("human_minutes") is not None else "unknown"} minutes
-({run.get("human_interventions") if run.get("human_interventions") is not None else "?"} interventions)
+AI / TASK DURATION
+{ai_line}
+
+HUMAN SUPERVISION
+{human_line}
+({interventions_line})
+Post-audit time must not be included here.
 
 MANUAL CODE REVIEW
 {manual_line}
+
+ESCAPED DEFECTS
+{escaped_line}
 
 KNOWN RISKS
 {risk_line}
@@ -279,13 +539,19 @@ Accepted without exhaustive human review: {delegation}
 """
 
 
-def compute_metrics(runs: list[dict[str, Any]]) -> dict[str, Any]:
+def compute_metrics(
+    runs: list[dict[str, Any]],
+    *,
+    post_audits: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
     """Derive only metrics that can be computed from known fields.
 
     Nulls are skipped, not invented. See docs/EVALS.md for limitations —
     especially CATO Catch Rate (unknown defects are invisible).
     """
     total = len(runs)
+    audits = post_audits if post_audits is not None else []
+    audit_by_task = {a["task_id"]: a for a in audits if a.get("task_id")}
 
     # Delegation rate: among tasks where the field is known.
     known_accept = [
@@ -298,6 +564,30 @@ def compute_metrics(runs: list[dict[str, Any]]) -> dict[str, Any]:
         delegation_rate = delegated / len(known_accept)
     else:
         delegation_rate = None
+
+    # Safe Delegation / False Trust: only delegated tasks with a completed post-audit.
+    delegated_audited = [
+        r
+        for r in runs
+        if r.get("accepted_without_manual_review") is True
+        and r.get("task_id") in audit_by_task
+    ]
+    if delegated_audited:
+        clean_n = sum(
+            1
+            for r in delegated_audited
+            if audit_by_task[r["task_id"]].get("audit_result") == "CLEAN"
+        )
+        defect_n = sum(
+            1
+            for r in delegated_audited
+            if audit_by_task[r["task_id"]].get("audit_result") == "MATERIAL_DEFECT"
+        )
+        safe_delegation_rate = clean_n / len(delegated_audited)
+        false_trust_rate = defect_n / len(delegated_audited)
+    else:
+        safe_delegation_rate = None
+        false_trust_rate = None
 
     minutes = [
         r["human_minutes"]
@@ -324,16 +614,6 @@ def compute_metrics(runs: list[dict[str, Any]]) -> dict[str, Any]:
         for r in runs
         if r.get("qa_result") in ("PASS", "FAIL", "BLOCKED", "REJECT")
     ]
-    # Treat REJECT as rejection synonym if someone uses it on qa_result.
-    qa_rejected = [
-        r
-        for r in reached_qa
-        if str(r.get("qa_result")).upper() in ("FAIL", "REJECT", "BLOCKED")
-    ]
-    # For rejection rate, BLOCKED is not always a rejection of quality — count
-    # FAIL and REJECT only; BLOCKED stays in "reached QA" denominator optionally.
-    # Spec asked: QA rejected / tasks reaching QA. Use FAIL + REJECT as rejected;
-    # BLOCKED counts as reached but not as rejected (environment/spec issue).
     qa_fail = [
         r for r in reached_qa if str(r.get("qa_result")).upper() in ("FAIL", "REJECT")
     ]
@@ -361,6 +641,9 @@ def compute_metrics(runs: list[dict[str, Any]]) -> dict[str, Any]:
         "tasks_recorded": total,
         "delegation_rate": delegation_rate,
         "delegation_sample_size": len(known_accept),
+        "safe_delegation_rate": safe_delegation_rate,
+        "false_trust_rate": false_trust_rate,
+        "delegated_post_audit_sample_size": len(delegated_audited),
         "human_minutes_per_task": human_minutes_per_task,
         "human_minutes_sample_size": len(minutes),
         "cato_catch_rate": cato_catch_rate,
@@ -372,7 +655,10 @@ def compute_metrics(runs: list[dict[str, Any]]) -> dict[str, Any]:
         "limitations": [
             "Absence of findings does not mean absence of defects.",
             "CATO Catch Rate only covers findings that were recorded; escaped unknown bugs are invisible.",
+            "CATO PASS is internal controls only — not objective correctness.",
+            "Safe Delegation / False Trust ignore tasks without a completed post-audit.",
             "Rates ignore tasks where the required fields are null.",
+            "Post-audit time is experimental verification, not human_minutes.",
         ],
     }
 
@@ -389,10 +675,12 @@ def render_metrics(metrics: dict[str, Any]) -> str:
         return f"{v:.2f}"
 
     lines = [
-        "CATO EVAL METRICS (v0)",
+        "CATO EVAL METRICS (v0.1)",
         "",
         f"Tasks recorded: {metrics['tasks_recorded']}",
         f"Delegation rate: {pct(metrics['delegation_rate'])} (n={metrics['delegation_sample_size']})",
+        f"Safe delegation rate: {pct(metrics['safe_delegation_rate'])} (n={metrics['delegated_post_audit_sample_size']})",
+        f"False trust rate: {pct(metrics['false_trust_rate'])} (n={metrics['delegated_post_audit_sample_size']})",
         f"Human minutes / task: {num(metrics['human_minutes_per_task'])} (n={metrics['human_minutes_sample_size']})",
         f"CATO catch rate: {pct(metrics['cato_catch_rate'])} (findings={metrics['findings_total']})",
         f"QA rejection rate: {pct(metrics['qa_rejection_rate'])} (reached QA={metrics['qa_reached']})",
@@ -417,7 +705,10 @@ def build_feedback(run: dict[str, Any]) -> dict[str, Any]:
         f"retries={run.get('retries') if run.get('retries') is not None else 'unknown'}."
     )
     if not findings:
-        what_failed = "No findings were recorded (this does not prove there were no defects)."
+        what_failed = (
+            "No findings were recorded (this does not prove there were no defects; "
+            "CATO PASS is not objective correctness)."
+        )
     else:
         what_failed = "; ".join(
             f"{f.get('finding')} [{f.get('severity') or '?'}]" for f in findings
@@ -646,6 +937,20 @@ def main(argv: list[str] | None = None) -> int:
     p_rec.add_argument("--json", dest="json_str")
     p_rec.add_argument("--file")
 
+    p_iv = sub.add_parser(
+        "intervention",
+        help="append a human supervision intervention (not AI time, not post-audit)",
+    )
+    p_iv.add_argument("--json", dest="json_str")
+    p_iv.add_argument("--file")
+
+    p_pa = sub.add_parser(
+        "post-audit",
+        help="append independent post-audit (does not count as human_minutes)",
+    )
+    p_pa.add_argument("--json", dest="json_str")
+    p_pa.add_argument("--file")
+
     p_rep = sub.add_parser("report", help="print trust report for a task_id")
     p_rep.add_argument("task_id")
 
@@ -671,6 +976,25 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Recorded {run['task_id']} → {RUNS_PATH.relative_to(ROOT)}")
         return 0
 
+    if args.cmd == "intervention":
+        raw = _load_json_arg(args.json_str, args.file)
+        item = record_intervention(raw)
+        print(
+            f"Intervention on {item['task_id']}: "
+            f"{item['type']} ({item['duration_minutes']} min) → "
+            f"{INTERVENTIONS_PATH.relative_to(ROOT)}"
+        )
+        return 0
+
+    if args.cmd == "post-audit":
+        raw = _load_json_arg(args.json_str, args.file)
+        audit = record_post_audit(raw)
+        print(
+            f"Post-audit {audit['task_id']} → {audit['audit_result']} → "
+            f"{POST_AUDITS_PATH.relative_to(ROOT)}"
+        )
+        return 0
+
     if args.cmd == "report":
         run = get_run(args.task_id)
         if not run:
@@ -680,7 +1004,15 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.cmd == "metrics":
-        print(render_metrics(compute_metrics(_read_jsonl(RUNS_PATH))), end="")
+        print(
+            render_metrics(
+                compute_metrics(
+                    _read_jsonl(RUNS_PATH),
+                    post_audits=_read_jsonl(POST_AUDITS_PATH),
+                )
+            ),
+            end="",
+        )
         return 0
 
     if args.cmd == "feedback":

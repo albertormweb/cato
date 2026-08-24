@@ -12,12 +12,24 @@
   "retries": 0,
   "architecture_violations": 0,
   "scope_violations": 0,
-  "human_interventions": 1,
-  "human_minutes": 4,
+  "human_intervention_log": [
+    {
+      "timestamp": "2026-08-24T10:14:00+00:00",
+      "type": "requirement_clarification",
+      "duration_minutes": 2,
+      "note": "Clarified whether cancelled contracts should be included."
+    },
+    {
+      "timestamp": "2026-08-24T10:40:00+00:00",
+      "type": "acceptance",
+      "duration_minutes": 2,
+      "note": "Accepted without exhaustive review after Trust Report."
+    }
+  ],
   "manual_code_review_required": false,
   "accepted_without_manual_review": true,
   "regressions": 0,
-  "escaped_defects": 0,
+  "escaped_defects": null,
   "total_duration_minutes": 40,
   "estimated_cost": null,
   "result": "PASS",

@@ -21,12 +21,15 @@ Labels (`avoidable`, `reversed`) in `memory/agent-log.md` matter — see
 
 ## `evals.py`
 
-Evals v0 + Feedback Loop v0 — append task evidence, trust reports, metrics,
-feedback text, and improvement proposals that never auto-apply to `.claude/`.
+Evals v0.1 + Feedback Loop v0 — append task evidence, human interventions,
+post-audits, trust reports, metrics (including Safe Delegation / False Trust),
+improvement proposals (never auto-apply to `.claude/`).
 
 ```bash
+python tooling/evals.py intervention --file intervention.json
 python tooling/evals.py record --file run.json
 python tooling/evals.py report TASK_ID
+python tooling/evals.py post-audit --file audit.json
 python tooling/evals.py metrics
 python tooling/evals.py feedback TASK_ID
 python tooling/evals.py propose --file proposal.json

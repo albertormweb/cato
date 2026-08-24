@@ -94,25 +94,35 @@ For the score to mean anything, annotate HANDOFFs as you file them: write
 `DESIGN.md`, and `reversed` on an entry whose `PASS` a later agent overturned.
 Without those markers the script can't distinguish a good block from a lazy one.
 
-### Evals v0 (task evidence)
+### Evals v0.1 (task evidence)
 
 When a **task** (not every micro-handoff) reaches a terminal outcome
 (`PASS` / `REJECT` / abandoned with a known result), append an eval run if you
-have enough known fields — never invent counts:
+have enough known fields — never invent counts.
+
+**CATO PASS** means internal controls passed only — not objective correctness
+and not safe delegation. Safe delegation needs a later human post-audit
+(`docs/EVALS.md`).
+
+**Never invent** human-owned fields (`human_minutes`, interventions, review /
+delegation flags) or `escaped_defects: 0`. Use `null` when unknown. Prefer the
+human intervention log; `human_minutes` is derived from it. AI/task duration is
+`total_duration_minutes` — separate from supervision.
 
 ```bash
+python tooling/evals.py intervention --file <intervention.json>
 python tooling/evals.py record --file <task-eval.json>
 python tooling/evals.py report <task_id>
 python tooling/evals.py feedback <task_id>
+python tooling/evals.py post-audit --file <audit.json>
 ```
 
-Use `null` for unknown fields. Every finding must include `detected_by`. Schema
-and limits: `docs/EVALS.md`. Storage: `memory/evals/runs.jsonl`.
+Every finding must include `detected_by`. Schema and limits: `docs/EVALS.md`.
 
 If feedback suggests a repeated process gap and you have evidence across tasks,
 create a proposal (`PROPOSED` only). Do **not** edit `.claude/` or rules because
 a proposal exists. Human approval is `set-status` only; applying an approved
-change is a separate deliberate edit:
+change is a separate deliberate edit (frozen experiment: store, do not apply):
 
 ```bash
 python tooling/evals.py propose --file <proposal.json>

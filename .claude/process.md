@@ -110,17 +110,20 @@ working session, `/calibrate` compares them against `memory/agent-log.md` and pr
 adjustments to `.claude/config.md`. Proposals go to `PENDING_APPROVAL` — the orchestrator
 never silently retunes its own limits.
 
-## Evals and feedback (v0)
+## Evals and feedback (v0.1)
 
 Task-level evidence lives in `memory/evals/` (JSONL), managed by
 `tooling/evals.py`. It answers: can we delegate with less supervision, and should
 we propose a process change?
 
-- **Record** after a task completes (known fields only).
-- **Trust report** / **feedback** from that record.
+- **Human interventions** during the task (human-owned; never invented).
+- **Record** after a task completes (known fields only; `escaped_defects` stays
+  null until later evidence).
+- **Trust report** / **feedback** — CATO PASS = internal controls only.
+- **Post-audit** later (experimental verification; does not add to
+  `human_minutes`) → Safe Delegation / False Trust.
 - **Improvement proposals** start as `PROPOSED` and need human
   `APPROVED` / `REJECTED`. Status updates never rewrite `.claude/` or prompts.
+  During the frozen experiment, do not apply approved proposals.
 
-Details and limitations (especially: no findings ≠ no bugs): `docs/EVALS.md`.
-This is separate from agent `memory/trust-score.md` (HANDOFF reliability) and from
-`benchmarks/` (Cato vs plain Claude Code).
+Details: `docs/EVALS.md`. Separate from `memory/trust-score.md` and `benchmarks/`.
