@@ -45,6 +45,10 @@ the markdown framework works without it.
 **Portability is partial.** Non-Claude-Code hosts get `AGENTS.md` rules only — no
 isolated subagents or slash commands.
 
+**Evals / feedback v0 is evidence-only.** `memory/evals/` + `tooling/evals.py`
+record runs and proposals; approving a proposal does not apply it to `.claude/`.
+Catch-rate metrics ignore unknown escaped defects — see `docs/EVALS.md`.
+
 ## Harvested shortcuts
 
 <!-- /harvest-debt appends dated sections here -->

@@ -109,3 +109,18 @@ Cato's numbers are reasoned starting points, not measurements. After a real
 working session, `/calibrate` compares them against `memory/agent-log.md` and proposes
 adjustments to `.claude/config.md`. Proposals go to `PENDING_APPROVAL` — the orchestrator
 never silently retunes its own limits.
+
+## Evals and feedback (v0)
+
+Task-level evidence lives in `memory/evals/` (JSONL), managed by
+`tooling/evals.py`. It answers: can we delegate with less supervision, and should
+we propose a process change?
+
+- **Record** after a task completes (known fields only).
+- **Trust report** / **feedback** from that record.
+- **Improvement proposals** start as `PROPOSED` and need human
+  `APPROVED` / `REJECTED`. Status updates never rewrite `.claude/` or prompts.
+
+Details and limitations (especially: no findings ≠ no bugs): `docs/EVALS.md`.
+This is separate from agent `memory/trust-score.md` (HANDOFF reliability) and from
+`benchmarks/` (Cato vs plain Claude Code).

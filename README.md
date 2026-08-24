@@ -54,7 +54,8 @@ Build PLANNING.md Now; work in a loop until the first milestone ships.
 
 That is the intended loop: **master prompt → scope cut → approve once → agents build**.
 Details: `.claude/process.md`. Walkthrough: `docs/FIRST-PROJECT.md`. Vocabulary:
-`docs/CONCEPTS.md`. Latest integrity audit: `docs/VALIDATION.md`.
+`docs/CONCEPTS.md`. Task evidence (Evals / Feedback v0): `docs/EVALS.md`.
+Latest integrity audit: `docs/VALIDATION.md`.
 
 ## The agents
 

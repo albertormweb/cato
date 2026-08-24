@@ -28,6 +28,7 @@ Don't duplicate here anything that lives in the imported files.
 - Session history (summarised) → `memory/session-log.md`
 - Per-agent audit trail → `memory/agent-log.md`
 - Per-agent reliability → `memory/trust-score.md`
+- Task evals / feedback proposals → `memory/evals/` (see `docs/EVALS.md`)
 - Known technical debt → `TECH-DEBT.md`
 
 Don't read anything outside this list unless the specific task requires it.

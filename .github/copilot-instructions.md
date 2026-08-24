@@ -21,6 +21,7 @@ framework accepts, and CI checks it doesn't spread further.
 - Requirements per feature → `specs/`
 - Closed decisions → `memory/adr/`
 - Undeliberated session choices → `memory/decisions.md`
+- Task evals / feedback proposals → `memory/evals/` (see `docs/EVALS.md`)
 - Session history → `memory/session-log.md`
 - Known technical debt → `TECH-DEBT.md`
 

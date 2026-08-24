@@ -1,0 +1,11 @@
+{
+  "id": "IMP-001",
+  "observed_pattern": "Changes affecting billing and contracts repeatedly produce failures when architecture/contracts.md is not consulted.",
+  "evidence_task_ids": ["TASK-32", "TASK-41", "TASK-48"],
+  "evidence_count": 3,
+  "confidence": "MEDIUM",
+  "counterexamples": ["TASK-50"],
+  "proposed_change": "Require architecture/contracts.md during planning when billing + contracts are affected.",
+  "expected_benefit": "Reduce architecture/requirement errors.",
+  "risk": "Additional context/process overhead."
+}

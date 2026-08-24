@@ -93,3 +93,30 @@ For the score to mean anything, annotate HANDOFFs as you file them: write
 `avoidable` in the summary of a `BLOCKED` whose answer was already in `specs/` or
 `DESIGN.md`, and `reversed` on an entry whose `PASS` a later agent overturned.
 Without those markers the script can't distinguish a good block from a lazy one.
+
+### Evals v0 (task evidence)
+
+When a **task** (not every micro-handoff) reaches a terminal outcome
+(`PASS` / `REJECT` / abandoned with a known result), append an eval run if you
+have enough known fields — never invent counts:
+
+```bash
+python tooling/evals.py record --file <task-eval.json>
+python tooling/evals.py report <task_id>
+python tooling/evals.py feedback <task_id>
+```
+
+Use `null` for unknown fields. Every finding must include `detected_by`. Schema
+and limits: `docs/EVALS.md`. Storage: `memory/evals/runs.jsonl`.
+
+If feedback suggests a repeated process gap and you have evidence across tasks,
+create a proposal (`PROPOSED` only). Do **not** edit `.claude/` or rules because
+a proposal exists. Human approval is `set-status` only; applying an approved
+change is a separate deliberate edit:
+
+```bash
+python tooling/evals.py propose --file <proposal.json>
+python tooling/evals.py set-status IMP-001 APPROVED
+```
+
+Optionally print aggregate metrics at session close: `python tooling/evals.py metrics`.

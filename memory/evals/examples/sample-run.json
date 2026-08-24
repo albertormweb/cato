@@ -1,0 +1,48 @@
+{
+  "task_id": "DEV-142",
+  "task_type": "feature",
+  "risk_level": "medium",
+  "agent": "implementer",
+  "model": "sonnet",
+  "requirements_total": 8,
+  "requirements_verified": 8,
+  "tests_passed": 142,
+  "tests_failed": 0,
+  "qa_result": "PASS",
+  "retries": 0,
+  "architecture_violations": 0,
+  "scope_violations": 0,
+  "human_interventions": 1,
+  "human_minutes": 4,
+  "manual_code_review_required": false,
+  "accepted_without_manual_review": true,
+  "regressions": 0,
+  "escaped_defects": 0,
+  "total_duration_minutes": 40,
+  "estimated_cost": null,
+  "result": "PASS",
+  "findings": [
+    {
+      "finding": "missing edge case in return fee",
+      "severity": "medium",
+      "detected_by": "architect",
+      "stage": "design",
+      "resolved": true
+    },
+    {
+      "finding": "flaky assertion",
+      "severity": "low",
+      "detected_by": "tests",
+      "stage": "tests",
+      "resolved": true
+    },
+    {
+      "finding": "unclear error message",
+      "severity": "low",
+      "detected_by": "qa",
+      "stage": "qa",
+      "resolved": true
+    }
+  ],
+  "known_risks": ["low: fee rounding in other currencies"]
+}

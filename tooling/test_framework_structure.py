@@ -154,6 +154,7 @@ def test_docs_exist_and_are_linked():
         "docs/CONCEPTS.md",
         "docs/FIRST-PROJECT.md",
         "docs/VALIDATION.md",
+        "docs/EVALS.md",
     ):
         assert (ROOT / doc).exists(), f"Missing {doc}"
         assert doc in readme, f"README doesn't link {doc}"
