@@ -54,6 +54,31 @@ record runs, human interventions, post-audits, and proposals; approving a
 proposal does not apply it to `.claude/`. CATO PASS ≠ objective correctness;
 Catch-rate / escaped defects stay honest about unknowns — see `docs/EVALS.md`.
 
+## The `qa` role does not add signal (pilot runs 01-03, Míticos FC)
+
+Across three runs, `reviewer` overturned nine findings that `qa` had already
+approved — including a `SystemExit(1)` that stopped the container from starting,
+youth-academy seasons counted as top-flight appearances, and a deduplication key
+that would have reopened a closed blocker. `qa` itself reported wrong counts in
+three HANDOFFs and returned at least one false claim about the data.
+
+The obvious hypothesis — that `qa` was running on too cheap a model tier — was
+tested in run 03: moved from Mechanical to Judgment with a reinforced prompt
+requiring literal verification of acceptance criteria and plausibility checks.
+It did not improve. Trust score went from 75% to 63.6%.
+
+Two hypotheses remain open:
+1. The role is badly defined: verifying without having designed or implemented
+   leaves too little context to judge plausibility.
+2. The role is structurally redundant, and what is needed is `reviewer` earlier
+   in the flow rather than a better `qa`.
+
+Final pilot trust scores: `reviewer` 100% (6/6), `architect` 100% (3/3),
+`qa` 63.6%, `implementer` 64.3%.
+
+Not fixed. Recorded so the next attempt does not start from the tier hypothesis
+again.
+
 ## Harvested shortcuts
 
 <!-- /harvest-debt appends dated sections here -->

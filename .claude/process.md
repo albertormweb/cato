@@ -32,6 +32,24 @@ Pause and ask the human when any of these fire. Autonomy never overrides them:
 
 Verbal "sounds good" in chat is not approval. State lives in `PLANNING.md`.
 
+## Asking the human at PENDING_APPROVAL
+
+When an agent reaches a `PENDING_APPROVAL` gate, it writes the artifact as
+usual **and** asks the human directly in the session, using the available input
+tool, presenting the options the artifact itself has already worked out. The
+artifact remains the record; the question is only the interface.
+
+This does not weaken the no-self-approval rule: the agent presents options and
+their measured trade-offs, never picks one, and never proceeds on silence or on
+an ambiguous answer. If the answer doesn't map cleanly onto one of the options,
+it asks again instead of interpreting.
+
+The agent that asks must not be the one that wrote the artifact.
+
+Provenance: added after pilot run 02 (six approval gates in one run, each
+costing a session exit and a return with a new prompt). Validated in run 03:
+nine decisions taken in-session, zero exits.
+
 ## Master-prompt build
 
 Intended path for greenfield (and the default mental model for this framework):
