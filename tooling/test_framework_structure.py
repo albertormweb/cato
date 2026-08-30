@@ -78,7 +78,10 @@ def test_internal_references_resolve():
             if name in known_external or any(c.exists() for c in candidates):
                 continue
             # Files a project creates as it goes, absent in the blank template.
-            generated = ("specs/", "memory/adr/", "0001", "0000", "CHANGELOG.md")
+            generated = (
+                "specs/", "memory/adr/", "0001", "0000", "CHANGELOG.md",
+                "memory/run-NN-notes.md", "memory/runs.md",  # written by /close-run
+            )
             if any(part in name for part in generated):
                 continue
             raise AssertionError(f"{path.name} references missing file: {name}")
