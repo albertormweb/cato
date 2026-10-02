@@ -509,19 +509,45 @@ def test_human_owned_fields_documented():
     assert "accepted_without_manual_review" in ev.HUMAN_OWNED_FIELDS
 
 
-def test_cli_output_survives_cp1252_stdout(eval_paths, monkeypatch, tmp_path):
+def _cp1252_stdout(monkeypatch):
     import io
 
+    out = io.TextIOWrapper(io.BytesIO(), encoding="cp1252")  # strict errors
+    monkeypatch.setattr("sys.stdout", out)
+    return out
+
+
+def _read_out(out) -> str:
+    out.flush()
+    return out.buffer.getvalue().decode("cp1252")
+
+
+def test_cli_messages_are_ascii_arrows_on_cp1252_stdout(eval_paths, monkeypatch, tmp_path):
     ev.record_run(_sample_run(task_id="T-enc"))
-    audit = {
-        "task_id": "T-enc",
-        "audit_result": "CLEAN",
-        "material_defects": [],
-        "notes": "snowman ☃ in ledger text",
-    }
+    audit = {"task_id": "T-enc", "audit_result": "CLEAN", "material_defects": []}
     f = tmp_path / "audit.json"
     f.write_text(json.dumps(audit), encoding="utf-8")
     monkeypatch.setattr(ev, "ROOT", tmp_path)
-    out = io.TextIOWrapper(io.BytesIO(), encoding="cp1252")  # strict errors
-    monkeypatch.setattr("sys.stdout", out)
+    out = _cp1252_stdout(monkeypatch)
     assert ev.main(["post-audit", "--file", str(f)]) == 0
+    text = _read_out(out)
+    assert "Post-audit T-enc -> CLEAN -> " in text
+    assert "?" not in text
+
+
+def test_cli_ledger_text_is_escaped_not_lost_on_cp1252_stdout(eval_paths, monkeypatch):
+    run = _sample_run(task_id="T-enc2")
+    run["findings"] = [
+        {
+            "finding": "snowman " + chr(0x2603) + " in ledger text",
+            "severity": "low",
+            "detected_by": "qa",
+            "stage": "tests",
+            "resolved": False,
+        }
+    ]
+    ev.record_run(run)
+    out = _cp1252_stdout(monkeypatch)
+    assert ev.main(["feedback", "T-enc2"]) == 0
+    text = _read_out(out)
+    assert "snowman " + chr(92) + "u2603 in ledger text" in text

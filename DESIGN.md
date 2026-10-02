@@ -29,7 +29,7 @@ labels: `docs/POSITIONING.md`, `README.md`.
 | `.claude/process.md` | Autonomy, master-prompt build, loop mode, dry-run, observability |
 | `.claude/claude-orchestrator.md` | Coordinator behaviour and HANDOFF protocol |
 | `.claude/agents/*.md` | Eight specialists with tools matching their write/read jobs |
-| `.claude/commands/` | `/init-project`, `/harvest-debt`, `/calibrate` |
+| `.claude/commands/` | `/init-project`, `/harvest-debt`, `/calibrate`, `/close-run`, `/post-audit` |
 | `memory/` | ADRs, session log, agent audit log, generated trust score |
 | `tooling/` | Scripts + tests that enforce what prose cannot |
 | `docs/` | Positioning, concepts, first-project, evals, validation |

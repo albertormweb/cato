@@ -970,15 +970,16 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parser.parse_args(argv)
 
-    # Output may include arbitrary ledger text; never crash on a narrow console/pipe encoding.
+    # Ledger text may hold characters the console/pipe encoding cannot represent.
+    # backslashreplace prints them as backslash escapes: no crash, no data silently lost.
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
-            stream.reconfigure(errors="replace")
+            stream.reconfigure(errors="backslashreplace")
 
     if args.cmd == "record":
         raw = _load_json_arg(args.json_str, args.file)
         run = record_run(raw)
-        print(f"Recorded {run['task_id']} → {RUNS_PATH.relative_to(ROOT)}")
+        print(f"Recorded {run['task_id']} -> {RUNS_PATH.relative_to(ROOT)}")
         return 0
 
     if args.cmd == "intervention":
@@ -986,7 +987,7 @@ def main(argv: list[str] | None = None) -> int:
         item = record_intervention(raw)
         print(
             f"Intervention on {item['task_id']}: "
-            f"{item['type']} ({item['duration_minutes']} min) → "
+            f"{item['type']} ({item['duration_minutes']} min) -> "
             f"{INTERVENTIONS_PATH.relative_to(ROOT)}"
         )
         return 0
@@ -995,7 +996,7 @@ def main(argv: list[str] | None = None) -> int:
         raw = _load_json_arg(args.json_str, args.file)
         audit = record_post_audit(raw)
         print(
-            f"Post-audit {audit['task_id']} → {audit['audit_result']} → "
+            f"Post-audit {audit['task_id']} -> {audit['audit_result']} -> "
             f"{POST_AUDITS_PATH.relative_to(ROOT)}"
         )
         return 0
@@ -1037,7 +1038,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.cmd == "set-status":
         prop = set_proposal_status(args.proposal_id, args.status, note=args.note)
-        print(f"{prop['id']} → {prop['status']}")
+        print(f"{prop['id']} -> {prop['status']}")
         return 0
 
     return 1

@@ -69,24 +69,40 @@ was run and what it returned, or the source cited. No evidence, no
 `safe_delegation`.
 
 A defect is material if it breaks an acceptance criterion or is visible to
-whoever uses the product. Each defect is attributed to exactly one run — the
-one whose scope should have closed it — and the notes say so, so it is never
+whoever uses the product. Each defect is attributed to exactly one run —
+normally the one whose scope should have closed it; the next section covers
+the cases where that run can't take it — and the notes say so, so it is never
 counted twice.
 
-### When the defect originated in a run already audited
+### Attributing a defect that comes from another run
 
-An audit can surface a defect that an earlier run introduced, and that run may
-already have its entry in `post-audits.jsonl`. Then:
+An audit can surface a defect that another run introduced or should have
+closed. That other run may already have its entry in `post-audits.jsonl`, or
+may not be audited yet. Then:
 
 - Attribute it to the run whose scope should have closed it, not to the run
   where it originated.
-- If the run whose scope should have closed it is itself already audited,
-  attribute it to the most recent run being audited at that moment.
+- If the run whose scope should have closed it can't take it — it is already
+  audited, or it is not audited yet and is not part of this audit — attribute
+  it to the most recent run being audited at that moment.
 - Say so in the `notes` of the entry being written: the run where the defect
-  originated and the run that should have closed it, so it is never counted
-  twice.
+  originated and the run that should have closed it.
 - Closed ledgers are never rewritten. The entries of the runs already audited,
   and their `escaped_defects`, stay as recorded.
+
+A defect attributed this way goes in the `material_defects` of the run it is
+charged to and forces `MATERIAL_DEFECT`, even if every delivery of that run is
+`safe_delegation`. This takes precedence over the no-entry case for
+`unverifiable` deliveries in step 4: a known defect never ends up unrecorded.
+The run's deliveries keep the classes their own evidence gives them.
+
+The rule holds in both directions. Before counting any defect, check
+`post-audits.jsonl` for it — in particular when auditing a run whose defect
+may already have been charged to another run under this rule. A defect already
+counted is not counted again: it does not go in `material_defects`, it does
+not force `MATERIAL_DEFECT`, and the delivery that passed it is left out of
+the per-delivery count, like the reversed ones. The notes name the entry that
+already holds it.
 
 This is bookkeeping, not judgment: what matters is that the defect is counted
 once and stays traceable, not which run it is charged to.
@@ -101,17 +117,19 @@ then.
 One entry per run in `memory/evals/post-audits.jsonl`, in the format of
 `memory/evals/examples/sample-post-audit.json`:
 
-- `audit_result`: `MATERIAL_DEFECT` if any delivery is `false_trust`. `CLEAN`
-  only if **every** audited delivery is `safe_delegation`.
+- `audit_result`: `MATERIAL_DEFECT` if any delivery is `false_trust`, or if a
+  defect was attributed to this run under the rule in step 3. `CLEAN` only if
+  **every** audited delivery is `safe_delegation` and no defect was attributed
+  to the run.
 - `material_defects`: one text per defect — what it is, why it is a defect and
   how it was verified.
 - `notes`: date, the state audited against, each delivery's class with its
   evidence, the reversed deliveries excluded, the sampling coverage and what
   was left unverified.
 
-If there is no `false_trust` but some delivery is `unverifiable`, **record no
-entry**: `CLEAN` would set `escaped_defects` to 0 and count the run as safe
-delegation. Report to the human with all the evidence and leave
+If there is no `false_trust` and no attributed defect, but some delivery is
+`unverifiable`, **record no entry**: `CLEAN` would set `escaped_defects` to 0
+and count the run as safe delegation. Report to the human with all the evidence and leave
 `escaped_defects` at `null`.
 
 Record with `python tooling/evals.py post-audit --file <audit.json>` (the input
@@ -129,7 +147,11 @@ False Trust rate, always with the denominator in view:
 
 - **Per delivery**: false_trust / (safe_delegation + false_trust).
   `unverifiable` and reversed deliveries don't enter; report them separately.
-- **Per run**: runs with `MATERIAL_DEFECT` / runs audited.
+  A defect charged to a run under the rule in step 3, with none of that run's
+  deliveries being `false_trust`, enters neither numerator nor denominator;
+  report it separately too.
+- **Per run**: runs with `MATERIAL_DEFECT` / runs audited. A defect attributed
+  under the rule in step 3 counts here.
 - **The official one** in `docs/EVALS.md` (`python tooling/evals.py metrics`)
   only counts runs with `accepted_without_manual_review = true`, a flag only
   the human sets. If it is `null`, the metric is n/a: say so, and don't fill in

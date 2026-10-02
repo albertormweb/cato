@@ -13,8 +13,11 @@ against the entries below and apply only the intervening changes.
    bumped for v0.2, so treat it as v0.1 and read the v0.2 entry too.
 2. Read the entries below newer than that version.
 3. Copy the new `.claude/` and root files that apply. Never overwrite
-   `PLANNING.md`, `DESIGN.md`, `specs/`, `domain/`, `design/` or `memory/` —
-   those are project-owned content, not framework files.
+   `PLANNING.md`, `DESIGN.md`, `specs/`, `domain/`, `design/`, `memory/` or
+   `CHANGELOG.md` — those are project-owned content, not framework files. In a
+   cloned project `CHANGELOG.md` is the product's own changelog, kept by
+   `docs`: read the framework's entries in the Cato repository instead of
+   copying this file over it.
 4. Run `python tooling/sync_rules.py --fix` if `AGENTS.md` changed.
 5. Run `python -m pytest tooling/ -c tooling/pytest.ini` to catch broken
    references introduced by a partial copy.
@@ -35,13 +38,17 @@ Source: run 04 of the Míticos FC pilot and its post-audit on 2026-10-02.
   material defect that four runs and every inline control had missed — players
   with `primera_verificada = True` who had only played in the second division
   (Segunda) for the attributed club, about 4% of the pool.
-- **Attribution rule for defects that originated in an already-audited run**
-  (same file). The defect goes to the run whose scope should have closed it,
-  not the run where it originated; if that run is already audited too, it goes
-  to the most recent run being audited. The notes name the run of origin and
-  the run that should have closed it, so the defect is never counted twice, and
-  closed ledgers are never rewritten. Missing in the pilot version, where it
-  had to be improvised during the run 04 audit.
+- **Attribution rule for defects that come from another run** (same file). The
+  defect goes to the run whose scope should have closed it, not the run where
+  it originated; if that run is already audited, or not audited yet and not
+  part of this audit, it goes to the most recent run being audited. It is
+  recorded in that run's `material_defects` and forces `MATERIAL_DEFECT`, so a
+  known defect never ends up unrecorded; it counts in the per-run rate, not
+  the per-delivery one. The notes name the run of origin and the run that
+  should have closed it, a later audit checks `post-audits.jsonl` before
+  counting so the defect is never counted twice, and closed ledgers are never
+  rewritten. Missing in the pilot version, where it had to be improvised
+  during the run 04 audit.
 
 Pilot False Trust rates after this audit, as reported by the command:
 
@@ -58,8 +65,10 @@ The official False Trust rate of `docs/EVALS.md` is still n/a:
 
 - **`tooling/evals.py` on Windows consoles.** `post-audit`, `record`,
   `intervention` and `set-status` wrote their entry and then crashed with
-  `UnicodeEncodeError` when printing `→`. They now print without depending on
-  `PYTHONIOENCODING`.
+  `UnicodeEncodeError` when printing `→`. Those messages now use `->`, and any
+  other character the output encoding can't represent (ledger text in
+  `report` or `feedback`) is written as a backslash escape instead of crashing
+  or being dropped. No `PYTHONIOENCODING` needed.
 
 ### Changed
 

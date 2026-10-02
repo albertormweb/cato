@@ -79,7 +79,7 @@ def test_internal_references_resolve():
                 continue
             # Files a project creates as it goes, absent in the blank template.
             generated = (
-                "specs/", "memory/adr/", "0001", "0000", "CHANGELOG.md",
+                "specs/", "memory/adr/", "0001", "0000",
                 "memory/run-NN-notes.md", "memory/runs.md",  # written by /close-run
             )
             if any(part in name for part in generated):
