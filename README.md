@@ -307,7 +307,8 @@ python -m pytest tooling/ -c tooling/pytest.ini
 ## Versioning & adapting
 
 `.framework-version` + `CHANGELOG.md`. Upgrades are manual; never
-overwrite project-owned `PLANNING.md`, `DESIGN.md`, `specs/`, `domain/`, `memory/`.
+overwrite project-owned `PLANNING.md`, `DESIGN.md`, `specs/`, `domain/`,
+`design/`, `memory/` or `CHANGELOG.md`.
 
 - Fill `claude-brand-style.md` before user-facing output.
 - Fill `tests/README.md` before treating `qa: PASS` as meaningful.

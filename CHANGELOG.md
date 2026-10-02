@@ -47,8 +47,10 @@ Source: run 04 of the Míticos FC pilot and its post-audit on 2026-10-02.
   the per-delivery one. The notes name the run of origin and the run that
   should have closed it, a later audit checks `post-audits.jsonl` before
   counting so the defect is never counted twice, and closed ledgers are never
-  rewritten. Missing in the pilot version, where it had to be improvised
-  during the run 04 audit.
+  rewritten. No run a defect escaped from is recorded as `CLEAN`: if its
+  defect is already counted elsewhere and it has none of its own, no entry is
+  recorded and `escaped_defects` stays `null`. Missing in the pilot version,
+  where it had to be improvised during the run 04 audit.
 
 Pilot False Trust rates after this audit, as reported by the command:
 

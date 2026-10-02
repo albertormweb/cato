@@ -533,6 +533,60 @@ def test_cli_messages_are_ascii_arrows_on_cp1252_stdout(eval_paths, monkeypatch,
     text = _read_out(out)
     assert "Post-audit T-enc -> CLEAN -> " in text
     assert "?" not in text
+    assert "→" not in text
+
+
+def _assert_clean_cp1252(out, expected: str) -> None:
+    text = _read_out(out)
+    assert expected in text
+    assert "?" not in text
+    assert "→" not in text
+
+
+def test_cli_record_message_is_ascii_on_cp1252_stdout(eval_paths, monkeypatch, tmp_path):
+    f = tmp_path / "run.json"
+    f.write_text(json.dumps(_sample_run(task_id="T-enc-rec")), encoding="utf-8")
+    monkeypatch.setattr(ev, "ROOT", tmp_path)
+    out = _cp1252_stdout(monkeypatch)
+    assert ev.main(["record", "--file", str(f)]) == 0
+    _assert_clean_cp1252(out, "Recorded T-enc-rec -> ")
+
+
+def test_cli_intervention_message_is_ascii_on_cp1252_stdout(
+    eval_paths, monkeypatch, tmp_path
+):
+    item = {
+        "task_id": "T-enc-iv",
+        "timestamp": "2026-08-24T10:14:00+00:00",
+        "type": "requirement_clarification",
+        "duration_minutes": 4,
+        "note": "n",
+    }
+    f = tmp_path / "iv.json"
+    f.write_text(json.dumps(item), encoding="utf-8")
+    monkeypatch.setattr(ev, "ROOT", tmp_path)
+    out = _cp1252_stdout(monkeypatch)
+    assert ev.main(["intervention", "--file", str(f)]) == 0
+    _assert_clean_cp1252(out, "Intervention on T-enc-iv: requirement_clarification (4 min) -> ")
+
+
+def test_cli_set_status_message_is_ascii_on_cp1252_stdout(eval_paths, monkeypatch):
+    ev.record_proposal(
+        {
+            "id": "IMP-ENC",
+            "observed_pattern": "p",
+            "evidence_task_ids": ["A", "B", "C"],
+            "evidence_count": 3,
+            "confidence": "MEDIUM",
+            "counterexamples": [],
+            "proposed_change": "c",
+            "expected_benefit": "b",
+            "risk": "r",
+        }
+    )
+    out = _cp1252_stdout(monkeypatch)
+    assert ev.main(["set-status", "IMP-ENC", "APPROVED"]) == 0
+    _assert_clean_cp1252(out, "IMP-ENC -> APPROVED")
 
 
 def test_cli_ledger_text_is_escaped_not_lost_on_cp1252_stdout(eval_paths, monkeypatch):
