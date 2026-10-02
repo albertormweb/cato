@@ -79,7 +79,8 @@ already counted elsewhere is, materially, a run a defect escaped from. Counted
 as a failure, each such run adds one to numerator and denominator alike, and on
 its own makes the ledger's rate underestimated or exact, never higher. A run
 left without an entry for `unverifiable` deliveries is not a failure under
-either reading: it can only push the ledger's rate up or leave it exact.
+either reading: it can only push the ledger's rate up or leave it exact. With
+both kinds missing, under the failure reading the bias can go either way.
 Stating a direction without stating the definition is the mistake to avoid. In
 the pilot the rate is exact under both readings: 4/4, and every run has an
 entry. The command's step 5 says so. Not fixed; it hangs on the same decision
