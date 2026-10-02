@@ -49,10 +49,12 @@ Source: run 04 of the Míticos FC pilot and its post-audit on 2026-10-02.
   counting so the defect is never counted twice, and closed ledgers are never
   rewritten. No run a defect escaped from is recorded as `CLEAN`: if its
   defect is already counted elsewhere and it has none of its own, no entry is
-  recorded and `escaped_defects` stays `null`. That makes the cumulative
-  per-delivery rate computed from the ledger a lower bound (recorded in
-  `TECH-DEBT.md`). Missing in the pilot version,
-  where it had to be improvised during the run 04 audit.
+  recorded and `escaped_defects` stays `null`. A run without an entry loses
+  its `false_trust` and its `safe_delegation` deliveries at once, so computed
+  from the ledger the `false_trust` count is a lower bound and the
+  per-delivery rate is incomplete, with a bias that can go either way
+  (recorded in `TECH-DEBT.md`). Missing in the pilot version, where it had to
+  be improvised during the run 04 audit.
 
 Pilot False Trust rates after this audit, as reported by the command:
 
@@ -61,6 +63,9 @@ Pilot False Trust rates after this audit, as reported by the command:
 | Per delivery, run 04 | 1/10 |
 | Per delivery, pilot cumulative | 4/25 (16%) |
 | Per run, with a material defect | 4/4 |
+
+The pilot figures are not affected by that incompleteness: all four runs have
+an entry, so 4/25 is exact.
 
 The official False Trust rate of `docs/EVALS.md` is still n/a:
 `accepted_without_manual_review` is `null` in all four runs.

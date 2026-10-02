@@ -54,15 +54,18 @@ record runs, human interventions, post-audits, and proposals; approving a
 proposal does not apply it to `.claude/`. CATO PASS ≠ objective correctness;
 Catch-rate / escaped defects stay honest about unknowns — see `docs/EVALS.md`.
 
-**The per-delivery False Trust rate computed from the ledger is a lower bound.**
+**The per-delivery False Trust rate computed from the ledger is incomplete.**
 Since v0.3, `/post-audit` records no entry for a run whose `false_trust`
-deliveries are all for a defect already counted in another run's entry — no run
-a defect escaped from may be recorded `CLEAN`. Those deliveries show up in that
-execution's report and in no ledger, so the per-delivery rate computed from
-`memory/evals/post-audits.jsonl` leaves them out and systematically
-underestimates. The command's step 5 says so; nothing stores them yet. Not
-fixed: it needs a decision on where delivery-level results of a run without an
-entry should live.
+deliveries are all for defects already counted in another run's entry, and with
+no defect attributed to it — no run a defect escaped from may be recorded
+`CLEAN`. That run's deliveries show up in that execution's report and in no
+ledger: it loses its `false_trust` and its `safe_delegation` deliveries at
+once. So, computed from `memory/evals/post-audits.jsonl`, the `false_trust`
+count is a lower bound, while the rate is missing terms in both numerator and
+denominator and its bias can go either way. Runs left without an entry because
+of `unverifiable` deliveries drop out of the rate the same way. The command's
+step 5 says so; nothing stores those deliveries yet. Not fixed: it needs a
+decision on where delivery-level results of a run without an entry should live.
 
 ## The `qa` role does not add signal (pilot runs 01-03, Míticos FC)
 
