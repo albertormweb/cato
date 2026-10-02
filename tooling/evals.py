@@ -970,6 +970,11 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parser.parse_args(argv)
 
+    # Output may include arbitrary ledger text; never crash on a narrow console/pipe encoding.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(errors="replace")
+
     if args.cmd == "record":
         raw = _load_json_arg(args.json_str, args.file)
         run = record_run(raw)

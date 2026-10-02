@@ -266,6 +266,8 @@ rules without subagents. Claude Code gets the full subagent system today.
 | `/init-project "..." --dry-run` | Preview only |
 | `/harvest-debt` | Collect `SHORTCUT:` into `TECH-DEBT.md` |
 | `/calibrate` | Propose `config.md` edits from a real session log |
+| `/close-run` | Dump metrics to `memory/evals/`, scaffold observation notes |
+| `/post-audit` | Audit closed run's deliveries; classify and record findings |
 
 ---
 
@@ -283,7 +285,7 @@ docs/                        # POSITIONING, CONCEPTS, FIRST-PROJECT, EVALS, VALI
 PLANNING.md | DESIGN.md | DEPLOYMENT.md
 design/ | specs/ | domain/   # domain starts empty (README stub)
 tests/ | memory/ | tooling/ | benchmarks/
-TECH-DEBT.md | FRAMEWORK-CHANGELOG.md
+TECH-DEBT.md | CHANGELOG.md
 ```
 
 ---
@@ -304,7 +306,7 @@ python -m pytest tooling/ -c tooling/pytest.ini
 
 ## Versioning & adapting
 
-`.framework-version` + `FRAMEWORK-CHANGELOG.md`. Upgrades are manual; never
+`.framework-version` + `CHANGELOG.md`. Upgrades are manual; never
 overwrite project-owned `PLANNING.md`, `DESIGN.md`, `specs/`, `domain/`, `memory/`.
 
 - Fill `claude-brand-style.md` before user-facing output.

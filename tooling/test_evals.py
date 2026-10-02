@@ -507,3 +507,21 @@ def test_feedback_qa_fail_suggests_change(eval_paths):
 def test_human_owned_fields_documented():
     assert "human_minutes" in ev.HUMAN_OWNED_FIELDS
     assert "accepted_without_manual_review" in ev.HUMAN_OWNED_FIELDS
+
+
+def test_cli_output_survives_cp1252_stdout(eval_paths, monkeypatch, tmp_path):
+    import io
+
+    ev.record_run(_sample_run(task_id="T-enc"))
+    audit = {
+        "task_id": "T-enc",
+        "audit_result": "CLEAN",
+        "material_defects": [],
+        "notes": "snowman ☃ in ledger text",
+    }
+    f = tmp_path / "audit.json"
+    f.write_text(json.dumps(audit), encoding="utf-8")
+    monkeypatch.setattr(ev, "ROOT", tmp_path)
+    out = io.TextIOWrapper(io.BytesIO(), encoding="cp1252")  # strict errors
+    monkeypatch.setattr("sys.stdout", out)
+    assert ev.main(["post-audit", "--file", str(f)]) == 0
