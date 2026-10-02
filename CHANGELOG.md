@@ -47,14 +47,14 @@ Source: run 04 of the Míticos FC pilot and its post-audit on 2026-10-02.
   the per-delivery one. The notes name the run of origin and the run that
   should have closed it, a later audit checks `post-audits.jsonl` before
   counting so the defect is never counted twice, and closed ledgers are never
-  rewritten. No run a defect escaped from is recorded as `CLEAN`: if its
-  defect is already counted elsewhere and it has none of its own, no entry is
-  recorded and `escaped_defects` stays `null`. A run without an entry loses
-  its `false_trust` and its `safe_delegation` deliveries at once, so computed
-  from the ledger the `false_trust` count is a lower bound and the
-  per-delivery rate is incomplete, with a bias that can go either way
-  (recorded in `TECH-DEBT.md`). Missing in the pilot version, where it had to
-  be improvised during the run 04 audit.
+  rewritten. No run a defect escaped from is recorded as `CLEAN`: if every
+  defect it passed is already counted elsewhere and it has none of its own
+  and none charged to it, no entry is recorded and `escaped_defects` stays
+  `null`. Such a run loses its `false_trust` and its `safe_delegation`
+  deliveries at once, so computed from the ledger the `false_trust` count is
+  a lower bound and the per-delivery rate is incomplete, with a bias that can
+  go either way (recorded in `TECH-DEBT.md`). Missing in the pilot version,
+  where it had to be improvised during the run 04 audit.
 
 Pilot False Trust rates after this audit, as reported by the command:
 

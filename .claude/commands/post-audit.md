@@ -168,9 +168,10 @@ False Trust rate, always with the denominator in view:
   numerator or denominator: the rate counts deliveries, and each one keeps the
   class its own evidence gives it. Report the charged defect separately.
   Computed cumulatively from `post-audits.jsonl`, the `false_trust` count is
-  a lower bound and the rate is incomplete: a run left without an entry
-  (steps 3 and 4) loses its `false_trust` and its `safe_delegation`
-  deliveries at once, so the bias can go either way. Say so whenever that
+  a lower bound and the rate is incomplete. A run left without an entry under
+  step 3 loses its `false_trust` and its `safe_delegation` deliveries at
+  once, so the bias can go either way. A run left without one under step 4
+  has no `false_trust`: it only shrinks the denominator. Say so whenever that
   rate is reported.
 - **Per run**: runs with `MATERIAL_DEFECT` / runs audited. A defect attributed
   under the rule in step 3 counts here.
