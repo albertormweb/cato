@@ -63,17 +63,18 @@ ledger: it loses its `false_trust` and its `safe_delegation` deliveries at
 once. So, computed from `memory/evals/post-audits.jsonl`, the `false_trust`
 count is a lower bound, while the rate is missing terms in both numerator and
 denominator and its bias can go either way. Runs left without an entry because
-of `unverifiable` deliveries have no `false_trust`: they only shrink the
-denominator, so on their own they make the ledger's rate an overestimate. The
-command's step 5 says so; nothing stores those deliveries yet. Not fixed: it
-needs a decision on where delivery-level results of a run without an entry
-should live.
+of `unverifiable` deliveries have no `false_trust`: at most they shrink the
+denominator, so on their own they can only make the ledger's rate an
+overestimate or leave it exact. The command's step 5 says so; nothing stores
+those deliveries yet. Not fixed: it needs a decision on where delivery-level
+results of a run without an entry should live.
 
-**The per-run False Trust rate computed from the ledger has the same bias.** A
-run left without an entry is missing from the denominator (runs audited), so
-computed from the ledger the per-run rate can only come out overestimated. In
-the pilot it is exact: 4/4, and every run has an entry. Not fixed; it hangs on
-the same decision as the per-delivery rate above.
+**The per-run False Trust rate computed from the ledger is biased by the same
+missing runs.** A run left without an entry is missing from the denominator
+(runs audited) and, having no `MATERIAL_DEFECT`, adds nothing to the numerator,
+so computed from the ledger the per-run rate can only come out overestimated or
+exact, never lower. In the pilot it is exact: 4/4, and every run has an entry.
+Not fixed; it hangs on the same decision as the per-delivery rate above.
 
 ## The `qa` role does not add signal (pilot runs 01-03, Míticos FC)
 

@@ -171,8 +171,8 @@ False Trust rate, always with the denominator in view:
   a lower bound and the rate is incomplete. A run left without an entry under
   step 3 loses its `false_trust` and its `safe_delegation` deliveries at
   once, so the bias can go either way. A run left without one under step 4
-  has no `false_trust`: it only shrinks the denominator. Say so whenever that
-  rate is reported.
+  has no `false_trust`: at most it shrinks the denominator, so it can push
+  the rate up, never down. Say so whenever that rate is reported.
 - **Per run**: runs with `MATERIAL_DEFECT` / runs audited. A defect attributed
   under the rule in step 3 counts here.
 - **The official one** in `docs/EVALS.md` (`python tooling/evals.py metrics`)
