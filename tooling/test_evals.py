@@ -533,14 +533,14 @@ def test_cli_messages_are_ascii_arrows_on_cp1252_stdout(eval_paths, monkeypatch,
     text = _read_out(out)
     assert "Post-audit T-enc -> CLEAN -> " in text
     assert "?" not in text
-    assert "→" not in text
+    assert r"\u2192" not in text
 
 
 def _assert_clean_cp1252(out, expected: str) -> None:
     text = _read_out(out)
     assert expected in text
     assert "?" not in text
-    assert "→" not in text
+    assert r"\u2192" not in text
 
 
 def test_cli_record_message_is_ascii_on_cp1252_stdout(eval_paths, monkeypatch, tmp_path):
@@ -567,7 +567,9 @@ def test_cli_intervention_message_is_ascii_on_cp1252_stdout(
     monkeypatch.setattr(ev, "ROOT", tmp_path)
     out = _cp1252_stdout(monkeypatch)
     assert ev.main(["intervention", "--file", str(f)]) == 0
-    _assert_clean_cp1252(out, "Intervention on T-enc-iv: requirement_clarification (4 min) -> ")
+    _assert_clean_cp1252(
+        out, "Intervention on T-enc-iv: requirement_clarification (4 min) -> "
+    )
 
 
 def test_cli_set_status_message_is_ascii_on_cp1252_stdout(eval_paths, monkeypatch):

@@ -104,9 +104,9 @@ already counted is not counted again: it does not go in this run's
 passed it is still `false_trust` — that is what its evidence says — and counts
 as such in the per-delivery rate. Then:
 
-- If the run has material defects of its own, record `MATERIAL_DEFECT` with
-  only those in `material_defects`; the notes name the entry that already
-  holds the other one.
+- If the run has other material defects — its own, or charged to it under
+  this rule — record `MATERIAL_DEFECT` with only those in `material_defects`;
+  the notes name the entry that already holds the defect not counted again.
 - If it has none, **record no entry**: the only result left would be `CLEAN`,
   and no run a defect escaped from may be recorded as safe delegation. Report
   to the human, naming the entry that holds the defect, and leave
@@ -146,7 +146,8 @@ If there is no `false_trust` and no attributed defect, but some delivery is
 `unverifiable`, **record no entry**: `CLEAN` would set `escaped_defects` to 0
 and count the run as safe delegation. Report to the human with all the
 evidence and leave `escaped_defects` at `null`. The same holds for a run whose
-only `false_trust` is for a defect already counted in another entry (step 3).
+`false_trust` deliveries are all for defects already counted in another entry,
+and with no defect attributed to it (step 3).
 
 Record with `python tooling/evals.py post-audit --file <audit.json>` (the input
 JSON lives outside the repo). That command fills in the run's
@@ -166,6 +167,9 @@ False Trust rate, always with the denominator in view:
   A defect charged to a run under the rule in step 3 adds nothing to either
   numerator or denominator: the rate counts deliveries, and each one keeps the
   class its own evidence gives it. Report the charged defect separately.
+  A cumulative rate computed from `post-audits.jsonl` is a lower bound: the
+  `false_trust` deliveries of runs left without an entry (step 3) are in no
+  ledger, so it does not count them. Say so whenever that rate is reported.
 - **Per run**: runs with `MATERIAL_DEFECT` / runs audited. A defect attributed
   under the rule in step 3 counts here.
 - **The official one** in `docs/EVALS.md` (`python tooling/evals.py metrics`)

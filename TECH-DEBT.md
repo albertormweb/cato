@@ -54,6 +54,16 @@ record runs, human interventions, post-audits, and proposals; approving a
 proposal does not apply it to `.claude/`. CATO PASS ≠ objective correctness;
 Catch-rate / escaped defects stay honest about unknowns — see `docs/EVALS.md`.
 
+**The per-delivery False Trust rate computed from the ledger is a lower bound.**
+Since v0.3, `/post-audit` records no entry for a run whose `false_trust`
+deliveries are all for a defect already counted in another run's entry — no run
+a defect escaped from may be recorded `CLEAN`. Those deliveries show up in that
+execution's report and in no ledger, so the per-delivery rate computed from
+`memory/evals/post-audits.jsonl` leaves them out and systematically
+underestimates. The command's step 5 says so; nothing stores them yet. Not
+fixed: it needs a decision on where delivery-level results of a run without an
+entry should live.
+
 ## The `qa` role does not add signal (pilot runs 01-03, Míticos FC)
 
 Across three runs, `reviewer` overturned nine findings that `qa` had already
