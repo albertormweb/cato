@@ -70,11 +70,20 @@ those deliveries yet. Not fixed: it needs a decision on where delivery-level
 results of a run without an entry should live.
 
 **The per-run False Trust rate computed from the ledger is biased by the same
-missing runs.** A run left without an entry is missing from the denominator
-(runs audited) and, having no `MATERIAL_DEFECT`, adds nothing to the numerator,
-so computed from the ledger the per-run rate can only come out overestimated or
-exact, never lower. In the pilot it is exact: 4/4, and every run has an entry.
-Not fixed; it hangs on the same decision as the per-delivery rate above.
+missing runs, and the direction depends on how a run without an entry is
+counted.** A run left without an entry is missing from the denominator (runs
+audited). Under the command's literal definition it is not `MATERIAL_DEFECT`
+and adds nothing to the numerator, so the ledger's rate comes out overestimated
+or exact, never lower. But a run left without an entry because its defect was
+already counted elsewhere is, materially, a run a defect escaped from. Counted
+as a failure, each such run adds one to numerator and denominator alike, and on
+its own makes the ledger's rate underestimated or exact, never higher. A run
+left without an entry for `unverifiable` deliveries is not a failure under
+either reading: it can only push the ledger's rate up or leave it exact.
+Stating a direction without stating the definition is the mistake to avoid. In
+the pilot the rate is exact under both readings: 4/4, and every run has an
+entry. The command's step 5 says so. Not fixed; it hangs on the same decision
+as the per-delivery rate above.
 
 ## The `qa` role does not add signal (pilot runs 01-03, Míticos FC)
 

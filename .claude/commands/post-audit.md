@@ -168,13 +168,20 @@ False Trust rate, always with the denominator in view:
   numerator or denominator: the rate counts deliveries, and each one keeps the
   class its own evidence gives it. Report the charged defect separately.
   Computed cumulatively from `post-audits.jsonl`, the `false_trust` count is
-  a lower bound and the rate is incomplete. A run left without an entry under
-  step 3 loses its `false_trust` and its `safe_delegation` deliveries at
-  once, so the bias can go either way. A run left without one under step 4
-  has no `false_trust`: at most it shrinks the denominator, so it can push
-  the rate up, never down. Say so whenever that rate is reported.
+  a lower bound and the rate may be incomplete: it is complete only if every
+  audited run has an entry. A run left without an entry under step 3 loses
+  its `false_trust` and its `safe_delegation` deliveries at once, so the bias
+  can go either way. A run left without one under step 4 has no
+  `false_trust`: at most it shrinks the denominator, so it can push the rate
+  up, never down. Say so whenever that rate is reported.
 - **Per run**: runs with `MATERIAL_DEFECT` / runs audited. A defect attributed
-  under the rule in step 3 counts here.
+  under the rule in step 3 counts here. Computed from `post-audits.jsonl`,
+  this rate leaves out the runs without an entry, and the direction of the
+  bias depends on how they are counted. As defined here they are not
+  `MATERIAL_DEFECT`, so the ledger's rate is overestimated or exact. Counted
+  as a failure — a defect did escape from it — a run left without an entry
+  under step 3 makes the ledger's rate underestimated or exact instead. Say
+  so whenever that rate is reported, with the definition the figure uses.
 - **The official one** in `docs/EVALS.md` (`python tooling/evals.py metrics`)
   only counts runs with `accepted_without_manual_review = true`, a flag only
   the human sets. If it is `null`, the metric is n/a: say so, and don't fill in
