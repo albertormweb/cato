@@ -23,6 +23,18 @@ against the entries below and apply only the intervening changes.
    references introduced by a partial copy.
 6. Update your project's `.framework-version` when done.
 
+## v0.3.1 — Bias-direction corrections (2026-10-02)
+
+Documentation only, no code. v0.3 shipped imprecise claims about which way
+runs without a post-audit entry bias the False Trust rates; step 5 of
+`.claude/commands/post-audit.md` and `TECH-DEBT.md` now state each direction
+with the definition it holds under, for the per-delivery and the per-run rate.
+It took five review passes over those claims, across v0.3 and this release:
+every flaw was in prose — most in text dictated by the human, two in the
+orchestrator's own wording — and none in code. The `v0.3` tag stays where it
+is, so the history stays visible: published, imprecision found, corrected.
+`.framework-version` is now `0.3.1`.
+
 ## v0.3 — Post-audit (2026-10-02)
 
 Source: run 04 of the Míticos FC pilot and its post-audit on 2026-10-02.
