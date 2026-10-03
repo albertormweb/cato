@@ -88,28 +88,37 @@ as the per-delivery rate above.
 
 ## The `qa` role does not add signal (pilot runs 01-03, Míticos FC)
 
-Across three runs, `reviewer` overturned nine findings that `qa` had already
-approved — including a `SystemExit(1)` that stopped the container from starting,
-youth-academy seasons counted as top-flight appearances, and a deduplication key
-that would have reopened a closed blocker. `qa` itself reported wrong counts in
-three HANDOFFs and returned at least one false claim about the data.
+Across three runs, nine `PASS` HANDOFFs are marked reversed in the pilot's
+agent log — five from `implementer`, four from `qa` itself. The defects behind
+those reversals included a `SystemExit(1)` that stopped the container from
+starting and youth-academy seasons counted as top-flight appearances. The
+marking undercounts: at least one further `reviewer` FAIL — a deduplication key
+that would have reopened a closed blocker — overturned an `implementer` PASS and
+a `qa` PASS that were never marked reversed. `qa` itself reported wrong counts
+in three HANDOFFs and returned at least one false claim about the data.
 
-The obvious hypothesis — that `qa` was running on too cheap a model tier — was
-tested in run 03: moved from Mechanical to Judgment with a reinforced prompt
-requiring literal verification of acceptance criteria and plausibility checks.
-It did not improve. Trust score went from 75% to 63.6%.
+The obvious hypothesis — that `qa` was running on too cheap a model tier —
+was believed tested in run 03 but was not. In the pilot repo, the `config.md`
+tier table was changed to list `qa` as Judgment and the prompt was reinforced
+(literal verification of acceptance criteria, plausibility checks), but `model`
+in `.claude/agents/qa.md` stayed `haiku`. What was measured was the
+Mechanical-tier model with a reinforced prompt. That did not improve; trust
+score fell from 75% to 63.6%. This was discovered 2026-10-03 when aligning the
+Míticos FC pilot with v0.3.1.
 
-Two hypotheses remain open:
+Three hypotheses remain open:
 1. The role is badly defined: verifying without having designed or implemented
    leaves too little context to judge plausibility.
 2. The role is structurally redundant, and what is needed is `reviewer` earlier
    in the flow rather than a better `qa`.
+3. The model tier is too cheap — `qa` should run on a higher tier (untested).
 
 Final pilot trust scores: `reviewer` 100% (6/6), `architect` 100% (3/3),
 `qa` 63.6%, `implementer` 64.3%.
 
-Not fixed. Recorded so the next attempt does not start from the tier hypothesis
-again.
+Not fixed. The tier has not been changed (that is a separate deliberate
+decision). Recorded so the next attempt knows the reinforced prompt alone was
+tried and the tier was not.
 
 ## Harvested shortcuts
 

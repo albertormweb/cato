@@ -138,10 +138,15 @@ that motivated it and, where applicable, the run that validated it.
 
 ### Tried and not adopted
 
-- **Raising `qa` from Mechanical to Judgment tier** with a reinforced prompt.
-  Tested in run 03: no improvement, trust score fell from 75% to 63.6%. Tier
-  stays Mechanical. The open hypotheses (role badly defined vs. structurally
-  redundant) are recorded in `TECH-DEBT.md`.
+- **Reinforcing the `qa` prompt while keeping the tier.** Tested in run 03 of
+  the Míticos FC pilot: no improvement, trust score fell from 75% to 63.6%.
+  Tier stays Mechanical. *Correction (2026-10-03):* This entry previously
+  stated the tier was raised to Judgment and tested. It was not — in the
+  Míticos FC pilot repo the `config.md` tier table listed `qa` as Judgment and
+  the prompt was reinforced, but the `model` field in `.claude/agents/qa.md`
+  never changed (still `haiku`, there and here). The tier hypothesis is
+  untested, not refuted. Three open hypotheses (role badly defined,
+  structurally redundant, tier) are recorded in `TECH-DEBT.md`.
 
 ## v0.1 — Experimental
 
