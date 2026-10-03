@@ -120,6 +120,47 @@ Not fixed. The tier has not been changed (that is a separate deliberate
 decision). Recorded so the next attempt knows the reinforced prompt alone was
 tried and the tier was not.
 
+## Known imprecisions in the `qa` section above and its changelog entry
+
+Documentation imprecisions, not code debt. Found by `reviewer` on 2026-10-03
+while the tier claim was being corrected, and deliberately left as written.
+"The pilot" is the Míticos FC repository; its files are cited by path.
+
+In the text of that correction:
+
+1. "At least one further `reviewer` FAIL … overturned an `implementer` PASS and
+   a `qa` PASS that were never marked reversed" is true of the log but does not
+   cite the documented count. The pilot's run-02 post-audit
+   (`memory/evals/post-audits.jsonl`) lists three unmarked PASS overturned by an
+   immediate `reviewer` FAIL — one `qa`, two `implementer`, the
+   deduplication-key delivery among them — and `memory/run-04-notas.md` gives
+   the total as 12 instead of 9. The post-audit does not count the `qa` PASS on
+   the deduplication-key delivery, which the sentence above does.
+2. "What was measured was the Mechanical-tier model" says more than the record
+   holds. No log records the model that actually ran; the evidence is
+   `model: haiku` in `qa.md` and the absence of any recorded override.
+3. `CHANGELOG.md`, v0.2: "while keeping the tier" sits badly with the correction
+   under it. In the pilot the tier label in `config.md` did change; what stayed
+   was the `model` field.
+
+In text that predates the correction:
+
+4. The "Final pilot trust scores" line mixes two closes. `reviewer` 6/6 and
+   `architect` 3/3 are from the run-02 close; `qa` 63.6% and `implementer`
+   64.3% are from the run-03 close, where `reviewer` was 9/9 and `architect`
+   had 4 deliveries. "`architect` 100% (3/3)" was never a computed score: under
+   5 deliveries the script prints "—". Nor is it final: after run 04 the pilot
+   has `qa` at 69.2% and `implementer` at 72.2%.
+5. "`qa` itself reported wrong counts in three HANDOFFs" has not been checked
+   against the record. The run-02 post-audit names two `qa` PASS with false
+   counts; where the third comes from is not established.
+6. The pilot's `memory/run-03-notas.md` says `.claude/config.md` did not change
+   between run 02 and run 03. Its git history says otherwise: the commit that
+   moved `qa` to Judgment in the tier table landed before run 03. The
+   correction above follows git.
+
+Not fixed. Recorded so the section is read with these caveats.
+
 ## Harvested shortcuts
 
 <!-- /harvest-debt appends dated sections here -->
